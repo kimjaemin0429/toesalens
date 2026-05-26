@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>퇴사렌즈 - 현실 기반 퇴사 판단</title>
+    <title>퇴사, 지금어때? - AI 기반 퇴사 판단</title>
     <style>
         * {
             margin: 0;
@@ -64,6 +64,14 @@
             margin-bottom: 40px;
             line-height: 1.5;
             font-weight: 500;
+        }
+
+        .intro-subtitle-en {
+            font-size: 12px;
+            color: #999;
+            margin-bottom: 40px;
+            font-weight: 400;
+            letter-spacing: 0.5px;
         }
 
         .btn-start {
@@ -535,8 +543,9 @@
         <div class="step-intro" id="stepIntro">
             <div>
                 <div class="intro-icon">🔍</div>
-                <h1 class="intro-title">퇴사렌즈</h1>
-                <p class="intro-subtitle">지금 퇴사해도<br>괜찮을까?</p>
+                <h1 class="intro-title">퇴사, 지금어때?</h1>
+                <p class="intro-subtitle-en">Resign or Wait?</p>
+                <p class="intro-subtitle">현실 기반 AI 퇴사 판단</p>
                 <button class="btn-start" onclick="goToForm()">AI 분석 시작</button>
             </div>
         </div>
@@ -922,11 +931,11 @@
             if (!window.lastResult) return;
             
             const result = window.lastResult;
-            const text = `퇴사렌즈 분석 결과\n점수: ${result.score}점\n생존기간: ${result.survivalMonths}개월\n재취업기간: ${result.rehireMonths}개월\n${result.scoreDescription}`;
+            const text = `퇴사, 지금어때? 분석 결과\n점수: ${result.score}점\n생존기간: ${result.survivalMonths}개월\n재취업기간: ${result.rehireMonths}개월\n${result.scoreDescription}`;
             
             if (navigator.share) {
                 navigator.share({
-                    title: '퇴사렌즈',
+                    title: '퇴사, 지금어때?',
                     text: text
                 });
             } else {
