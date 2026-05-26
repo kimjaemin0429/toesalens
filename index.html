@@ -268,25 +268,48 @@
         }
 
         .loading-progress {
-            margin-bottom: 32px;
+            margin-bottom: 48px;
+            padding: 0 20px;
         }
 
         .loading-step {
             display: flex;
-            align-items: flex-start;
-            gap: 12px;
-            margin-bottom: 16px;
+            align-items: center;
+            gap: 16px;
+            margin-bottom: 24px;
+            position: relative;
+            padding-left: 0;
+        }
+
+        .loading-step::after {
+            content: '';
+            position: absolute;
+            left: 18px;
+            top: 56px;
+            width: 2px;
+            height: 24px;
+            background: #e8eef5;
+        }
+
+        .loading-step.done::after {
+            background: #4caf50;
+        }
+
+        .loading-step:last-child::after {
+            display: none;
         }
 
         .loading-step.active .step-icon {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white;
             animation: pulse 1s ease-in-out infinite;
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
         }
 
         .loading-step.done .step-icon {
             background: #4caf50;
             color: white;
+            animation: scaleIn 0.4s ease-out;
         }
 
         .loading-step.pending .step-icon {
@@ -298,30 +321,30 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            width: 36px;
-            height: 36px;
+            width: 44px;
+            height: 44px;
             border-radius: 50%;
             font-weight: 600;
-            font-size: 18px;
+            font-size: 20px;
             flex-shrink: 0;
             transition: all 0.3s ease;
         }
 
         .step-text {
             flex: 1;
-            padding-top: 4px;
         }
 
         .step-label {
-            font-size: 13px;
-            font-weight: 600;
-            color: #333;
+            font-size: 14px;
+            font-weight: 700;
+            color: #1a1a1a;
+            margin-bottom: 4px;
         }
 
         .step-desc {
             font-size: 12px;
             color: #999;
-            margin-top: 2px;
+            margin-top: 0;
         }
 
         .loading-percentage {
@@ -492,8 +515,13 @@
         }
 
         @keyframes pulse {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0.6; }
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.8; transform: scale(1.05); }
+        }
+
+        @keyframes scaleIn {
+            0% { transform: scale(0.8); opacity: 0; }
+            100% { transform: scale(1); opacity: 1; }
         }
 
         .hidden {
