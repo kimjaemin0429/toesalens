@@ -1,0 +1,631 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>퇴사렌즈 - 현실 기반 퇴사 판단</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            color: #ffffff;
+            min-height: 100vh;
+            padding: 0;
+            overflow-x: hidden;
+        }
+
+        .container {
+            max-width: 480px;
+            margin: 0 auto;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* STEP 1: INTRO */
+        .step-intro {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 40px 20px;
+            text-align: center;
+        }
+
+        .intro-icon {
+            font-size: 64px;
+            margin-bottom: 20px;
+            animation: float 3s ease-in-out infinite;
+        }
+
+        .intro-title {
+            font-size: 32px;
+            font-weight: 700;
+            margin-bottom: 12px;
+            background: linear-gradient(135deg, #00d4ff 0%, #7c3aed 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .intro-subtitle {
+            font-size: 16px;
+            color: #b0b0c0;
+            margin-bottom: 40px;
+            line-height: 1.5;
+        }
+
+        .btn-start {
+            background: linear-gradient(135deg, #00d4ff 0%, #7c3aed 100%);
+            border: none;
+            color: #000;
+            padding: 14px 40px;
+            font-size: 16px;
+            font-weight: 600;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 8px 24px rgba(124, 58, 237, 0.3);
+        }
+
+        .btn-start:active {
+            transform: scale(0.98);
+        }
+
+        /* STEP 2: FORM */
+        .step-form {
+            flex: 1;
+            overflow-y: auto;
+            padding: 20px;
+            background: #0f0f1e;
+        }
+
+        .form-header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding-top: 20px;
+        }
+
+        .form-title {
+            font-size: 24px;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+
+        .form-subtitle {
+            font-size: 14px;
+            color: #b0b0c0;
+        }
+
+        .form-section {
+            margin-bottom: 24px;
+        }
+
+        .form-label {
+            display: block;
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: #e0e0f0;
+        }
+
+        .form-label-sub {
+            font-size: 12px;
+            color: #8080a0;
+            font-weight: 400;
+            margin-top: 2px;
+        }
+
+        .input-group {
+            display: flex;
+            gap: 8px;
+            align-items: flex-end;
+        }
+
+        .form-input {
+            flex: 1;
+            background: #1a1a2e;
+            border: 1px solid #2a2a4e;
+            color: #ffffff;
+            padding: 12px 14px;
+            border-radius: 8px;
+            font-size: 14px;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: #7c3aed;
+            background: #252540;
+            box-shadow: 0 0 0 3px rgba(124, 58, 237, 0.1);
+        }
+
+        .input-unit {
+            font-size: 12px;
+            color: #8080a0;
+            padding: 12px 8px;
+            font-weight: 500;
+        }
+
+        .form-select {
+            background: #1a1a2e;
+            border: 1px solid #2a2a4e;
+            color: #ffffff;
+            padding: 12px 14px;
+            border-radius: 8px;
+            font-size: 14px;
+            cursor: pointer;
+            width: 100%;
+        }
+
+        .form-select:focus {
+            outline: none;
+            border-color: #7c3aed;
+            background: #252540;
+            box-shadow: 0 0 0 3px rgba(124, 58, 237, 0.1);
+        }
+
+        .form-buttons {
+            display: flex;
+            gap: 10px;
+            margin-top: 30px;
+            padding: 20px 0;
+        }
+
+        .btn-submit {
+            flex: 1;
+            background: linear-gradient(135deg, #00d4ff 0%, #7c3aed 100%);
+            border: none;
+            color: #000;
+            padding: 14px;
+            font-size: 16px;
+            font-weight: 600;
+            border-radius: 8px;
+            cursor: pointer;
+        }
+
+        .btn-submit:active {
+            transform: scale(0.98);
+        }
+
+        /* STEP 3: LOADING */
+        .step-loading {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 40px 20px;
+        }
+
+        .loading-spinner {
+            width: 60px;
+            height: 60px;
+            margin-bottom: 30px;
+            position: relative;
+        }
+
+        .spinner {
+            width: 100%;
+            height: 100%;
+            border: 3px solid rgba(124, 58, 237, 0.2);
+            border-top: 3px solid #7c3aed;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+
+        .loading-text {
+            font-size: 16px;
+            color: #b0b0c0;
+            text-align: center;
+        }
+
+        /* STEP 4: RESULT */
+        .step-result {
+            flex: 1;
+            overflow-y: auto;
+            padding: 20px;
+            background: #0f0f1e;
+        }
+
+        .result-header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .result-title {
+            font-size: 24px;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+
+        .result-card {
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            border: 1px solid #2a2a4e;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 16px;
+        }
+
+        .result-card::before {
+            content: '';
+            display: block;
+            width: 100%;
+            height: 3px;
+            background: linear-gradient(90deg, #00d4ff 0%, #7c3aed 100%);
+            margin: -20px -20px 20px -20px;
+            border-radius: 12px 12px 0 0;
+        }
+
+        .card-label {
+            font-size: 12px;
+            color: #8080a0;
+            margin-bottom: 8px;
+            text-transform: uppercase;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+        }
+
+        .card-value {
+            font-size: 36px;
+            font-weight: 700;
+            margin-bottom: 8px;
+            background: linear-gradient(135deg, #00d4ff 0%, #7c3aed 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .card-description {
+            font-size: 13px;
+            color: #b0b0c0;
+            line-height: 1.4;
+        }
+
+        .score-bar {
+            width: 100%;
+            height: 8px;
+            background: #1a1a2e;
+            border-radius: 4px;
+            overflow: hidden;
+            margin-top: 12px;
+        }
+
+        .score-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #00d4ff 0%, #7c3aed 100%);
+            border-radius: 4px;
+            transition: width 1s ease-out;
+        }
+
+        .result-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 30px;
+            padding: 20px 0;
+        }
+
+        .btn-reset {
+            flex: 1;
+            background: #1a1a2e;
+            border: 1px solid #2a2a4e;
+            color: #ffffff;
+            padding: 12px;
+            font-size: 14px;
+            font-weight: 600;
+            border-radius: 8px;
+            cursor: pointer;
+        }
+
+        .btn-reset:active {
+            transform: scale(0.98);
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+        }
+
+        @keyframes spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        .hidden {
+            display: none !important;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- STEP 1: INTRO -->
+        <div class="step-intro" id="stepIntro">
+            <div>
+                <div class="intro-icon">🔍</div>
+                <h1 class="intro-title">퇴사렌즈</h1>
+                <p class="intro-subtitle">지금 퇴사해도<br>괜찮을까?</p>
+                <button class="btn-start" onclick="goToForm()">AI 분석 시작</button>
+            </div>
+        </div>
+
+        <!-- STEP 2: FORM -->
+        <div class="step-form hidden" id="stepForm">
+            <div class="form-header">
+                <div class="form-title">기본 정보 입력</div>
+                <div class="form-subtitle">현재 상황을 알려주세요</div>
+            </div>
+
+            <form onsubmit="submitForm(event)">
+                <div class="form-section">
+                    <label class="form-label">연 봉 <div class="form-label-sub">만원 단위</div></label>
+                    <div class="input-group">
+                        <input type="number" class="form-input" id="salary" placeholder="4500" required>
+                        <div class="input-unit">만원</div>
+                    </div>
+                </div>
+
+                <div class="form-section">
+                    <label class="form-label">월 실수령액 <div class="form-label-sub">세금·공제 후</div></label>
+                    <div class="input-group">
+                        <input type="number" class="form-input" id="monthlyIncome" placeholder="300" required>
+                        <div class="input-unit">만원</div>
+                    </div>
+                </div>
+
+                <div class="form-section">
+                    <label class="form-label">비상금 <div class="form-label-sub">현금/예금</div></label>
+                    <div class="input-group">
+                        <input type="number" class="form-input" id="savings" placeholder="2000" required>
+                        <div class="input-unit">만원</div>
+                    </div>
+                </div>
+
+                <div class="form-section">
+                    <label class="form-label">월 고정지출 <div class="form-label-sub">집세, 생활비 등</div></label>
+                    <div class="input-group">
+                        <input type="number" class="form-input" id="monthlyExpense" placeholder="150" required>
+                        <div class="input-unit">만원</div>
+                    </div>
+                </div>
+
+                <div class="form-section">
+                    <label class="form-label">대출금 <div class="form-label-sub">없으면 0</div></label>
+                    <div class="input-group">
+                        <input type="number" class="form-input" id="debt" placeholder="0" value="0" required>
+                        <div class="input-unit">만원</div>
+                    </div>
+                </div>
+
+                <div class="form-section">
+                    <label class="form-label">경력 연차</label>
+                    <select class="form-select" id="experience" required>
+                        <option value="">선택하세요</option>
+                        <option value="1">1년 미만</option>
+                        <option value="3">1~3년</option>
+                        <option value="5">3~5년</option>
+                        <option value="7">5~7년</option>
+                        <option value="10">7~10년</option>
+                        <option value="10+">10년 이상</option>
+                    </select>
+                </div>
+
+                <div class="form-section">
+                    <label class="form-label">현재 직무</label>
+                    <select class="form-select" id="currentRole" required>
+                        <option value="">선택하세요</option>
+                        <option value="개발">개발</option>
+                        <option value="PM/기획">PM/기획</option>
+                        <option value="디자인">디자인</option>
+                        <option value="마케팅">마케팅</option>
+                        <option value="영업">영업</option>
+                        <option value="CS">CS</option>
+                        <option value="기타">기타</option>
+                    </select>
+                </div>
+
+                <div class="form-section">
+                    <label class="form-label">회사 규모</label>
+                    <select class="form-select" id="companySize" required>
+                        <option value="">선택하세요</option>
+                        <option value="스타트업">스타트업</option>
+                        <option value="중소기업">중소기업</option>
+                        <option value="중견기업">중견기업</option>
+                        <option value="대기업">대기업</option>
+                    </select>
+                </div>
+
+                <div class="form-section">
+                    <label class="form-label">스트레스 수준</label>
+                    <select class="form-select" id="stressLevel" required>
+                        <option value="">선택하세요</option>
+                        <option value="낮음">낮음</option>
+                        <option value="중간">중간</option>
+                        <option value="높음">높음</option>
+                        <option value="매우높음">매우 높음</option>
+                    </select>
+                </div>
+
+                <div class="form-buttons">
+                    <button type="button" class="btn-reset" onclick="goToIntro()">뒤로</button>
+                    <button type="submit" class="btn-submit">AI 분석 시작</button>
+                </div>
+            </form>
+        </div>
+
+        <!-- STEP 3: LOADING -->
+        <div class="step-loading hidden" id="stepLoading">
+            <div class="loading-spinner">
+                <div class="spinner"></div>
+            </div>
+            <div class="loading-text">현재 상태를 분석 중입니다...</div>
+        </div>
+
+        <!-- STEP 4: RESULT -->
+        <div class="step-result hidden" id="stepResult">
+            <div class="result-header">
+                <div class="result-title">분석 결과</div>
+            </div>
+
+            <div class="result-card">
+                <div class="card-label">퇴사 추천 점수</div>
+                <div class="card-value" id="scoreValue">0</div>
+                <div class="score-bar">
+                    <div class="score-fill" id="scoreBar" style="width: 0%"></div>
+                </div>
+                <div class="card-description" id="scoreDescription">분석 중...</div>
+            </div>
+
+            <div class="result-card">
+                <div class="card-label">생존 가능 기간</div>
+                <div class="card-value" id="survivalValue">0개월</div>
+                <div class="card-description" id="survivalDescription">현금 기준</div>
+            </div>
+
+            <div class="result-card">
+                <div class="card-label">예상 재취업 기간</div>
+                <div class="card-value" id="rehireValue">0개월</div>
+                <div class="card-description" id="rehireDescription">직무별 평균</div>
+            </div>
+
+            <div class="result-actions">
+                <button class="btn-reset" onclick="goToForm()">다시 분석</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Firebase 초기화 -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/12.13.0/firebase-app.js";
+        import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/12.13.0/firebase-firestore.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyDSgacyvysPYbZB_-p1VF4RwxaMRUtRz0s",
+            authDomain: "toesalens-admin.firebaseapp.com",
+            projectId: "toesalens-admin",
+            storageBucket: "toesalens-admin.firebasestorage.app",
+            messagingSenderId: "202198810061",
+            appId: "1:202198810061:web:04d36a6425c986c90ed884"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+
+        window.firebaseDb = db;
+        window.firebaseDoc = doc;
+        window.firebaseGetDoc = getDoc;
+    </script>
+
+    <script>
+        function goToIntro() {
+            document.getElementById('stepIntro').classList.remove('hidden');
+            document.getElementById('stepForm').classList.add('hidden');
+            document.getElementById('stepLoading').classList.add('hidden');
+            document.getElementById('stepResult').classList.add('hidden');
+        }
+
+        function goToForm() {
+            document.getElementById('stepIntro').classList.add('hidden');
+            document.getElementById('stepForm').classList.remove('hidden');
+            document.getElementById('stepLoading').classList.add('hidden');
+            document.getElementById('stepResult').classList.add('hidden');
+        }
+
+        function goToLoading() {
+            document.getElementById('stepIntro').classList.add('hidden');
+            document.getElementById('stepForm').classList.add('hidden');
+            document.getElementById('stepLoading').classList.remove('hidden');
+            document.getElementById('stepResult').classList.add('hidden');
+        }
+
+        function goToResult() {
+            document.getElementById('stepIntro').classList.add('hidden');
+            document.getElementById('stepForm').classList.add('hidden');
+            document.getElementById('stepLoading').classList.add('hidden');
+            document.getElementById('stepResult').classList.remove('hidden');
+        }
+
+        async function loadConfigFromFirebase() {
+            try {
+                const docRef = window.firebaseDoc(window.firebaseDb, 'toesalens_config', 'main');
+                const docSnap = await window.firebaseGetDoc(docRef);
+                
+                if (docSnap.exists()) {
+                    return docSnap.data();
+                }
+                return null;
+            } catch (error) {
+                console.error('Firebase 로드 오류:', error);
+                return null;
+            }
+        }
+
+        async function submitForm(event) {
+            event.preventDefault();
+
+            const formData = {
+                salary: parseInt(document.getElementById('salary').value),
+                monthlyIncome: parseInt(document.getElementById('monthlyIncome').value),
+                savings: parseInt(document.getElementById('savings').value),
+                monthlyExpense: parseInt(document.getElementById('monthlyExpense').value),
+                debt: parseInt(document.getElementById('debt').value),
+                experience: document.getElementById('experience').value,
+                currentRole: document.getElementById('currentRole').value,
+                companySize: document.getElementById('companySize').value,
+                stressLevel: document.getElementById('stressLevel').value,
+            };
+
+            goToLoading();
+            await analyzeWithAI(formData);
+        }
+
+        async function analyzeWithAI(formData) {
+            try {
+                const firebaseConfig = await loadConfigFromFirebase();
+                
+                const requestBody = {
+                    ...formData,
+                    promptVersion: firebaseConfig?.promptVersion || 'v1',
+                    temperature: firebaseConfig?.temperature || 0.3,
+                    weights: firebaseConfig?.weights || { survival: 40, career: 40, stress: 20 }
+                };
+
+                const response = await fetch('/api/analyze', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(requestBody)
+                });
+
+                if (!response.ok) throw new Error('API Error');
+                
+                const result = await response.json();
+                displayResult(result);
+                goToResult();
+            } catch (error) {
+                console.error('분석 오류:', error);
+                document.querySelector('.step-loading .loading-text').textContent = '분석 중 오류가 발생했습니다.';
+            }
+        }
+
+        function displayResult(result) {
+            const score = result.score || 0;
+            document.getElementById('scoreValue').textContent = score;
+            document.getElementById('scoreBar').style.width = score + '%';
+            document.getElementById('scoreDescription').textContent = result.scoreDescription || '분석 완료';
+
+            const survival = result.survivalMonths || 0;
+            document.getElementById('survivalValue').textContent = survival + '개월';
+            document.getElementById('survivalDescription').textContent = result.survivalDescription || '재무 상황 확인';
+
+            const rehire = result.rehireMonths || 0;
+            document.getElementById('rehireValue').textContent = rehire + '개월';
+            document.getElementById('rehireDescription').textContent = result.rehireDescription || '업계 평균';
+        }
+    </script>
+</body>
+</html>
