@@ -87,30 +87,66 @@
         .step-form {
             flex: 1;
             overflow-y: auto;
-            padding: 20px;
-            background: white;
+            padding: 0;
+            background: linear-gradient(135deg, #f8f9fb 0%, #f0f4ff 100%);
+        }
+
+        .form-quote {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 24px 20px;
+            text-align: center;
+            color: white;
+            margin-bottom: 0;
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.2);
+        }
+
+        .quote-text {
+            font-size: 14px;
+            font-weight: 600;
+            line-height: 1.6;
+            margin-bottom: 8px;
+        }
+
+        .quote-author {
+            font-size: 12px;
+            opacity: 0.85;
+            font-style: italic;
         }
 
         .form-header {
             text-align: center;
-            margin-bottom: 30px;
-            padding-top: 20px;
+            margin-bottom: 24px;
+            padding: 24px 20px 0;
         }
 
         .form-title {
-            font-size: 24px;
+            font-size: 22px;
             font-weight: 700;
-            margin-bottom: 8px;
+            margin-bottom: 6px;
             color: #1a1a1a;
         }
 
         .form-subtitle {
-            font-size: 14px;
+            font-size: 13px;
             color: #888;
+        }
+
+        .form-content {
+            padding: 0 20px 20px;
         }
 
         .form-section {
             margin-bottom: 24px;
+            background: white;
+            padding: 16px;
+            border-radius: 12px;
+            border: 1px solid #e8eef5;
+            transition: all 0.2s ease;
+        }
+
+        .form-section:hover {
+            border-color: #667eea;
+            box-shadow: 0 2px 8px rgba(102, 126, 234, 0.08);
         }
 
         .form-label {
@@ -195,7 +231,7 @@
             display: flex;
             gap: 10px;
             margin-top: 30px;
-            padding: 20px 0;
+            padding: 0 20px 20px;
         }
 
         .btn-submit {
@@ -479,106 +515,114 @@
 
         <!-- STEP 2: FORM -->
         <div class="step-form hidden" id="stepForm">
+            <!-- 명언 섹션 -->
+            <div class="form-quote">
+                <div class="quote-text">💡 "완벽한 타이밍은 없다.<br>준비가 되면 지금이 그때다."</div>
+                <div class="quote-author">— Steve Jobs</div>
+            </div>
+
             <div class="form-header">
                 <div class="form-title">기본 정보 입력</div>
                 <div class="form-subtitle">현재 상황을 알려주세요</div>
             </div>
 
-            <form onsubmit="submitForm(event)">
-                <div class="form-section">
-                    <label class="form-label">연 봉 <div class="form-label-sub">만원 단위</div></label>
-                    <div class="input-group">
-                        <input type="number" class="form-input" id="salary" placeholder="4500" required>
-                        <div class="input-unit">만원</div>
+            <div class="form-content">
+                <form onsubmit="submitForm(event)">
+                    <div class="form-section">
+                        <label class="form-label">연 봉 <div class="form-label-sub">만원 단위</div></label>
+                        <div class="input-group">
+                            <input type="number" class="form-input" id="salary" placeholder="4500" required>
+                            <div class="input-unit">만원</div>
+                        </div>
                     </div>
-                </div>
 
-                <div class="form-section">
-                    <label class="form-label">월 실수령액 <div class="form-label-sub">세금·공제 후</div></label>
-                    <div class="input-group">
-                        <input type="number" class="form-input" id="monthlyIncome" placeholder="300" required>
-                        <div class="input-unit">만원</div>
+                    <div class="form-section">
+                        <label class="form-label">월 실수령액 <div class="form-label-sub">세금·공제 후</div></label>
+                        <div class="input-group">
+                            <input type="number" class="form-input" id="monthlyIncome" placeholder="300" required>
+                            <div class="input-unit">만원</div>
+                        </div>
                     </div>
-                </div>
 
-                <div class="form-section">
-                    <label class="form-label">비상금 <div class="form-label-sub">현금/예금</div></label>
-                    <div class="input-group">
-                        <input type="number" class="form-input" id="savings" placeholder="2000" required>
-                        <div class="input-unit">만원</div>
+                    <div class="form-section">
+                        <label class="form-label">비상금 <div class="form-label-sub">현금/예금</div></label>
+                        <div class="input-group">
+                            <input type="number" class="form-input" id="savings" placeholder="2000" required>
+                            <div class="input-unit">만원</div>
+                        </div>
                     </div>
-                </div>
 
-                <div class="form-section">
-                    <label class="form-label">월 고정지출 <div class="form-label-sub">집세, 생활비 등</div></label>
-                    <div class="input-group">
-                        <input type="number" class="form-input" id="monthlyExpense" placeholder="150" required>
-                        <div class="input-unit">만원</div>
+                    <div class="form-section">
+                        <label class="form-label">월 고정지출 <div class="form-label-sub">집세, 생활비 등</div></label>
+                        <div class="input-group">
+                            <input type="number" class="form-input" id="monthlyExpense" placeholder="150" required>
+                            <div class="input-unit">만원</div>
+                        </div>
                     </div>
-                </div>
 
-                <div class="form-section">
-                    <label class="form-label">대출금 <div class="form-label-sub">없으면 0</div></label>
-                    <div class="input-group">
-                        <input type="number" class="form-input" id="debt" placeholder="0" value="0" required>
-                        <div class="input-unit">만원</div>
+                    <div class="form-section">
+                        <label class="form-label">대출금 <div class="form-label-sub">없으면 0</div></label>
+                        <div class="input-group">
+                            <input type="number" class="form-input" id="debt" placeholder="0" value="0" required>
+                            <div class="input-unit">만원</div>
+                        </div>
                     </div>
-                </div>
 
-                <div class="form-section">
-                    <label class="form-label">경력 연차</label>
-                    <select class="form-select" id="experience" required>
-                        <option value="">선택하세요</option>
-                        <option value="1">1년 미만</option>
-                        <option value="3">1~3년</option>
-                        <option value="5">3~5년</option>
-                        <option value="7">5~7년</option>
-                        <option value="10">7~10년</option>
-                        <option value="10+">10년 이상</option>
-                    </select>
-                </div>
+                    <div class="form-section">
+                        <label class="form-label">경력 연차</label>
+                        <select class="form-select" id="experience" required>
+                            <option value="">선택하세요</option>
+                            <option value="1">1년 미만</option>
+                            <option value="3">1~3년</option>
+                            <option value="5">3~5년</option>
+                            <option value="7">5~7년</option>
+                            <option value="10">7~10년</option>
+                            <option value="10+">10년 이상</option>
+                        </select>
+                    </div>
 
-                <div class="form-section">
-                    <label class="form-label">현재 직무</label>
-                    <select class="form-select" id="currentRole" required>
-                        <option value="">선택하세요</option>
-                        <option value="개발">개발</option>
-                        <option value="PM/기획">PM/기획</option>
-                        <option value="디자인">디자인</option>
-                        <option value="마케팅">마케팅</option>
-                        <option value="영업">영업</option>
-                        <option value="CS">CS</option>
-                        <option value="기타">기타</option>
-                    </select>
-                </div>
+                    <div class="form-section">
+                        <label class="form-label">현재 직무</label>
+                        <select class="form-select" id="currentRole" required>
+                            <option value="">선택하세요</option>
+                            <option value="개발">개발</option>
+                            <option value="PM/기획">PM/기획</option>
+                            <option value="디자인">디자인</option>
+                            <option value="마케팅">마케팅</option>
+                            <option value="영업">영업</option>
+                            <option value="CS">CS</option>
+                            <option value="기타">기타</option>
+                        </select>
+                    </div>
 
-                <div class="form-section">
-                    <label class="form-label">회사 규모</label>
-                    <select class="form-select" id="companySize" required>
-                        <option value="">선택하세요</option>
-                        <option value="스타트업">스타트업</option>
-                        <option value="중소기업">중소기업</option>
-                        <option value="중견기업">중견기업</option>
-                        <option value="대기업">대기업</option>
-                    </select>
-                </div>
+                    <div class="form-section">
+                        <label class="form-label">회사 규모</label>
+                        <select class="form-select" id="companySize" required>
+                            <option value="">선택하세요</option>
+                            <option value="스타트업">스타트업</option>
+                            <option value="중소기업">중소기업</option>
+                            <option value="중견기업">중견기업</option>
+                            <option value="대기업">대기업</option>
+                        </select>
+                    </div>
 
-                <div class="form-section">
-                    <label class="form-label">스트레스 수준</label>
-                    <select class="form-select" id="stressLevel" required>
-                        <option value="">선택하세요</option>
-                        <option value="낮음">낮음</option>
-                        <option value="중간">중간</option>
-                        <option value="높음">높음</option>
-                        <option value="매우높음">매우 높음</option>
-                    </select>
-                </div>
+                    <div class="form-section">
+                        <label class="form-label">스트레스 수준</label>
+                        <select class="form-select" id="stressLevel" required>
+                            <option value="">선택하세요</option>
+                            <option value="낮음">낮음</option>
+                            <option value="중간">중간</option>
+                            <option value="높음">높음</option>
+                            <option value="매우높음">매우 높음</option>
+                        </select>
+                    </div>
 
-                <div class="form-buttons">
-                    <button type="button" class="btn-start" style="background: #f5f7fa; color: #667eea; border: 2px solid #e8eef5;" onclick="goToIntro()">뒤로</button>
-                    <button type="submit" class="btn-submit">AI 분석 시작</button>
-                </div>
-            </form>
+                    <div class="form-buttons">
+                        <button type="button" class="btn-start" style="background: #f5f7fa; color: #667eea; border: 2px solid #e8eef5;" onclick="goToIntro()">뒤로</button>
+                        <button type="submit" class="btn-submit">AI 분석 시작</button>
+                    </div>
+                </form>
+            </div>
         </div>
 
         <!-- STEP 3: LOADING -->
@@ -712,10 +756,8 @@
             document.getElementById('stepResult').classList.remove('hidden');
         }
 
-        // 로딩 애니메이션
         function animateLoading() {
             let percentage = 0;
-            const steps = [1, 2, 3];
             const maxPercentage = 90;
             const interval = setInterval(() => {
                 if (percentage < maxPercentage) {
@@ -723,7 +765,6 @@
                     if (percentage > maxPercentage) percentage = maxPercentage;
                     document.getElementById('percentage').textContent = Math.round(percentage) + '%';
 
-                    // 스텝 업데이트
                     if (percentage > 30) updateStep(1, 'done');
                     if (percentage > 60) updateStep(2, 'active');
                     if (percentage > 80) updateStep(2, 'done');
@@ -830,10 +871,8 @@
             document.getElementById('rehireValue').textContent = rehire + '개월';
             document.getElementById('rehireDescription').textContent = result.rehireDescription || '업계 평균';
 
-            // 추가 조언
             generateAdvice(score, survival, rehire);
 
-            // 결과 저장
             window.lastResult = result;
         }
 
