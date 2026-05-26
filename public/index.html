@@ -13,8 +13,8 @@
 
         body {
             font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
-            color: #ffffff;
+            background: linear-gradient(135deg, #f5f7fa 0%, #e8eef5 100%);
+            color: #1a1a1a;
             min-height: 100vh;
             padding: 0;
             overflow-x: hidden;
@@ -26,9 +26,11 @@
             min-height: 100vh;
             display: flex;
             flex-direction: column;
+            background: white;
+            box-shadow: 0 0 40px rgba(0, 0, 0, 0.08);
         }
 
-        /* STEP 1: INTRO */
+        /* ==================== STEP 1: INTRO ==================== */
         .step-intro {
             flex: 1;
             display: flex;
@@ -37,6 +39,7 @@
             align-items: center;
             padding: 40px 20px;
             text-align: center;
+            background: linear-gradient(135deg, #ffffff 0%, #f8f9fb 100%);
         }
 
         .intro-icon {
@@ -47,9 +50,9 @@
 
         .intro-title {
             font-size: 32px;
-            font-weight: 700;
+            font-weight: 900;
             margin-bottom: 12px;
-            background: linear-gradient(135deg, #00d4ff 0%, #7c3aed 100%);
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
@@ -57,34 +60,35 @@
 
         .intro-subtitle {
             font-size: 16px;
-            color: #b0b0c0;
+            color: #666;
             margin-bottom: 40px;
             line-height: 1.5;
+            font-weight: 500;
         }
 
         .btn-start {
-            background: linear-gradient(135deg, #00d4ff 0%, #7c3aed 100%);
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             border: none;
-            color: #000;
+            color: white;
             padding: 14px 40px;
             font-size: 16px;
             font-weight: 600;
             border-radius: 12px;
             cursor: pointer;
             transition: all 0.3s ease;
-            box-shadow: 0 8px 24px rgba(124, 58, 237, 0.3);
+            box-shadow: 0 8px 24px rgba(102, 126, 234, 0.3);
         }
 
         .btn-start:active {
             transform: scale(0.98);
         }
 
-        /* STEP 2: FORM */
+        /* ==================== STEP 2: FORM ==================== */
         .step-form {
             flex: 1;
             overflow-y: auto;
             padding: 20px;
-            background: #0f0f1e;
+            background: white;
         }
 
         .form-header {
@@ -97,11 +101,12 @@
             font-size: 24px;
             font-weight: 700;
             margin-bottom: 8px;
+            color: #1a1a1a;
         }
 
         .form-subtitle {
             font-size: 14px;
-            color: #b0b0c0;
+            color: #888;
         }
 
         .form-section {
@@ -113,12 +118,12 @@
             font-size: 14px;
             font-weight: 600;
             margin-bottom: 8px;
-            color: #e0e0f0;
+            color: #333;
         }
 
         .form-label-sub {
             font-size: 12px;
-            color: #8080a0;
+            color: #999;
             font-weight: 400;
             margin-top: 2px;
         }
@@ -131,44 +136,59 @@
 
         .form-input {
             flex: 1;
-            background: #1a1a2e;
-            border: 1px solid #2a2a4e;
-            color: #ffffff;
+            background: #f5f7fa;
+            border: 2px solid #e8eef5;
+            color: #1a1a1a;
             padding: 12px 14px;
             border-radius: 8px;
             font-size: 14px;
+            transition: all 0.2s ease;
+        }
+
+        .form-input::placeholder {
+            color: #ccc;
+            opacity: 1;
         }
 
         .form-input:focus {
             outline: none;
-            border-color: #7c3aed;
-            background: #252540;
-            box-shadow: 0 0 0 3px rgba(124, 58, 237, 0.1);
+            border-color: #667eea;
+            background: #f8f9ff;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
         }
 
         .input-unit {
             font-size: 12px;
-            color: #8080a0;
+            color: #999;
             padding: 12px 8px;
             font-weight: 500;
         }
 
         .form-select {
-            background: #1a1a2e;
-            border: 1px solid #2a2a4e;
-            color: #ffffff;
+            background: #f5f7fa;
+            border: 2px solid #e8eef5;
+            color: #1a1a1a;
             padding: 12px 14px;
             border-radius: 8px;
             font-size: 14px;
             cursor: pointer;
             width: 100%;
+            transition: all 0.2s ease;
+        }
+
+        .form-select option {
+            color: #1a1a1a;
+        }
+
+        .form-select option:first-child {
+            color: #ccc;
         }
 
         .form-select:focus {
             outline: none;
-            border-color: #7c3aed;
-            background: #252540;
-            box-shadow: 0 0 0 3px rgba(124, 58, 237, 0.1);
+            border-color: #667eea;
+            background: #f8f9ff;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
         }
 
         .form-buttons {
@@ -180,21 +200,22 @@
 
         .btn-submit {
             flex: 1;
-            background: linear-gradient(135deg, #00d4ff 0%, #7c3aed 100%);
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             border: none;
-            color: #000;
+            color: white;
             padding: 14px;
             font-size: 16px;
             font-weight: 600;
             border-radius: 8px;
             cursor: pointer;
+            transition: all 0.3s ease;
         }
 
         .btn-submit:active {
             transform: scale(0.98);
         }
 
-        /* STEP 3: LOADING */
+        /* ==================== STEP 3: LOADING ==================== */
         .step-loading {
             flex: 1;
             display: flex;
@@ -202,36 +223,97 @@
             justify-content: center;
             align-items: center;
             padding: 40px 20px;
+            background: linear-gradient(135deg, #ffffff 0%, #f8f9fb 100%);
         }
 
-        .loading-spinner {
-            width: 60px;
-            height: 60px;
-            margin-bottom: 30px;
-            position: relative;
-        }
-
-        .spinner {
+        .loading-content {
             width: 100%;
-            height: 100%;
-            border: 3px solid rgba(124, 58, 237, 0.2);
-            border-top: 3px solid #7c3aed;
+            max-width: 320px;
+        }
+
+        .loading-progress {
+            margin-bottom: 32px;
+        }
+
+        .loading-step {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            margin-bottom: 16px;
+        }
+
+        .loading-step.active .step-icon {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            animation: pulse 1s ease-in-out infinite;
+        }
+
+        .loading-step.done .step-icon {
+            background: #4caf50;
+            color: white;
+        }
+
+        .loading-step.pending .step-icon {
+            background: #e8eef5;
+            color: #999;
+        }
+
+        .step-icon {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 36px;
+            height: 36px;
             border-radius: 50%;
-            animation: spin 0.8s linear infinite;
+            font-weight: 600;
+            font-size: 18px;
+            flex-shrink: 0;
+            transition: all 0.3s ease;
         }
 
-        .loading-text {
-            font-size: 16px;
-            color: #b0b0c0;
+        .step-text {
+            flex: 1;
+            padding-top: 4px;
+        }
+
+        .step-label {
+            font-size: 13px;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .step-desc {
+            font-size: 12px;
+            color: #999;
+            margin-top: 2px;
+        }
+
+        .loading-percentage {
             text-align: center;
+            margin-top: 32px;
         }
 
-        /* STEP 4: RESULT */
+        .percentage-number {
+            font-size: 36px;
+            font-weight: 700;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 8px;
+        }
+
+        .percentage-text {
+            font-size: 13px;
+            color: #999;
+        }
+
+        /* ==================== STEP 4: RESULT ==================== */
         .step-result {
             flex: 1;
             overflow-y: auto;
             padding: 20px;
-            background: #0f0f1e;
+            background: white;
         }
 
         .result-header {
@@ -243,29 +325,32 @@
             font-size: 24px;
             font-weight: 700;
             margin-bottom: 8px;
+            color: #1a1a1a;
         }
 
         .result-card {
-            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
-            border: 1px solid #2a2a4e;
+            background: linear-gradient(135deg, #f8f9ff 0%, #f0f4ff 100%);
+            border: 2px solid #e8eef5;
             border-radius: 12px;
             padding: 20px;
             margin-bottom: 16px;
+            position: relative;
+            overflow: hidden;
         }
 
         .result-card::before {
             content: '';
-            display: block;
-            width: 100%;
-            height: 3px;
-            background: linear-gradient(90deg, #00d4ff 0%, #7c3aed 100%);
-            margin: -20px -20px 20px -20px;
-            border-radius: 12px 12px 0 0;
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
         }
 
         .card-label {
             font-size: 12px;
-            color: #8080a0;
+            color: #999;
             margin-bottom: 8px;
             text-transform: uppercase;
             font-weight: 600;
@@ -276,7 +361,7 @@
             font-size: 36px;
             font-weight: 700;
             margin-bottom: 8px;
-            background: linear-gradient(135deg, #00d4ff 0%, #7c3aed 100%);
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
@@ -284,14 +369,14 @@
 
         .card-description {
             font-size: 13px;
-            color: #b0b0c0;
+            color: #666;
             line-height: 1.4;
         }
 
         .score-bar {
             width: 100%;
             height: 8px;
-            background: #1a1a2e;
+            background: #e8eef5;
             border-radius: 4px;
             overflow: hidden;
             margin-top: 12px;
@@ -299,42 +384,80 @@
 
         .score-fill {
             height: 100%;
-            background: linear-gradient(90deg, #00d4ff 0%, #7c3aed 100%);
+            background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
             border-radius: 4px;
             transition: width 1s ease-out;
         }
 
+        /* 결과 액션 */
         .result-actions {
-            display: flex;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
             gap: 10px;
-            margin-top: 30px;
-            padding: 20px 0;
+            margin-top: 20px;
+            margin-bottom: 20px;
         }
 
-        .btn-reset {
-            flex: 1;
-            background: #1a1a2e;
-            border: 1px solid #2a2a4e;
-            color: #ffffff;
+        .btn-action {
             padding: 12px;
-            font-size: 14px;
-            font-weight: 600;
+            border: 2px solid #e8eef5;
+            background: white;
+            color: #667eea;
             border-radius: 8px;
+            font-weight: 600;
+            font-size: 13px;
             cursor: pointer;
+            transition: all 0.3s ease;
         }
 
-        .btn-reset:active {
-            transform: scale(0.98);
+        .btn-action:hover {
+            background: #f8f9ff;
+            border-color: #667eea;
         }
 
+        .btn-action.primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border: none;
+            color: white;
+        }
+
+        .btn-action.primary:hover {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            opacity: 0.9;
+        }
+
+        /* 추가 정보 */
+        .result-info {
+            background: #f0f4ff;
+            border-left: 4px solid #667eea;
+            padding: 16px;
+            border-radius: 8px;
+            margin-top: 20px;
+            margin-bottom: 20px;
+        }
+
+        .info-title {
+            font-size: 13px;
+            font-weight: 700;
+            color: #333;
+            margin-bottom: 8px;
+        }
+
+        .info-text {
+            font-size: 12px;
+            color: #666;
+            line-height: 1.5;
+        }
+
+        /* ==================== ANIMATIONS ==================== */
         @keyframes float {
             0%, 100% { transform: translateY(0px); }
             50% { transform: translateY(-10px); }
         }
 
-        @keyframes spin {
-            from { transform: rotate(0deg); }
-            to { transform: rotate(360deg); }
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.6; }
         }
 
         .hidden {
@@ -452,7 +575,7 @@
                 </div>
 
                 <div class="form-buttons">
-                    <button type="button" class="btn-reset" onclick="goToIntro()">뒤로</button>
+                    <button type="button" class="btn-start" style="background: #f5f7fa; color: #667eea; border: 2px solid #e8eef5;" onclick="goToIntro()">뒤로</button>
                     <button type="submit" class="btn-submit">AI 분석 시작</button>
                 </div>
             </form>
@@ -460,10 +583,38 @@
 
         <!-- STEP 3: LOADING -->
         <div class="step-loading hidden" id="stepLoading">
-            <div class="loading-spinner">
-                <div class="spinner"></div>
+            <div class="loading-content">
+                <div class="loading-progress">
+                    <div class="loading-step active" id="step1">
+                        <div class="step-icon">✓</div>
+                        <div class="step-text">
+                            <div class="step-label">재무 상태 분석</div>
+                            <div class="step-desc">비상금과 생활비 기반 분석 중</div>
+                        </div>
+                    </div>
+
+                    <div class="loading-step pending" id="step2">
+                        <div class="step-icon">2</div>
+                        <div class="step-text">
+                            <div class="step-label">커리어 경쟁력 평가</div>
+                            <div class="step-desc">시장 수요도 분석 진행</div>
+                        </div>
+                    </div>
+
+                    <div class="loading-step pending" id="step3">
+                        <div class="step-icon">3</div>
+                        <div class="step-text">
+                            <div class="step-label">퇴사 가능성 판정</div>
+                            <div class="step-desc">종합 평가 및 추천</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="loading-percentage">
+                    <div class="percentage-number" id="percentage">0%</div>
+                    <div class="percentage-text">분석 진행 중...</div>
+                </div>
             </div>
-            <div class="loading-text">현재 상태를 분석 중입니다...</div>
         </div>
 
         <!-- STEP 4: RESULT -->
@@ -493,8 +644,18 @@
                 <div class="card-description" id="rehireDescription">직무별 평균</div>
             </div>
 
+            <!-- 추가 정보 -->
+            <div class="result-info">
+                <div class="info-title">💡 당신에게 필요한 것</div>
+                <div class="info-text" id="adviceText">
+                    현재 분석 결과 기반 조언이 여기에 표시됩니다.
+                </div>
+            </div>
+
+            <!-- 액션 버튼 -->
             <div class="result-actions">
-                <button class="btn-reset" onclick="goToForm()">다시 분석</button>
+                <button class="btn-action" onclick="shareResult()">📤 공유하기</button>
+                <button class="btn-action primary" onclick="goToForm()">📊 다시 분석</button>
             </div>
         </div>
     </div>
@@ -541,6 +702,7 @@
             document.getElementById('stepForm').classList.add('hidden');
             document.getElementById('stepLoading').classList.remove('hidden');
             document.getElementById('stepResult').classList.add('hidden');
+            animateLoading();
         }
 
         function goToResult() {
@@ -548,6 +710,39 @@
             document.getElementById('stepForm').classList.add('hidden');
             document.getElementById('stepLoading').classList.add('hidden');
             document.getElementById('stepResult').classList.remove('hidden');
+        }
+
+        // 로딩 애니메이션
+        function animateLoading() {
+            let percentage = 0;
+            const steps = [1, 2, 3];
+            const maxPercentage = 90;
+            const interval = setInterval(() => {
+                if (percentage < maxPercentage) {
+                    percentage += Math.random() * 15;
+                    if (percentage > maxPercentage) percentage = maxPercentage;
+                    document.getElementById('percentage').textContent = Math.round(percentage) + '%';
+
+                    // 스텝 업데이트
+                    if (percentage > 30) updateStep(1, 'done');
+                    if (percentage > 60) updateStep(2, 'active');
+                    if (percentage > 80) updateStep(2, 'done');
+                    if (percentage > 85) updateStep(3, 'active');
+                }
+            }, 300);
+
+            window.loadingInterval = interval;
+        }
+
+        function updateStep(stepNum, status) {
+            const step = document.getElementById('step' + stepNum);
+            if (step) {
+                step.classList.remove('pending', 'active', 'done');
+                step.classList.add(status);
+                
+                if (status === 'done') step.querySelector('.step-icon').textContent = '✓';
+                else if (status === 'active') step.querySelector('.step-icon').textContent = stepNum;
+            }
         }
 
         async function loadConfigFromFirebase() {
@@ -581,6 +776,7 @@
             };
 
             goToLoading();
+            await new Promise(r => setTimeout(r, 2000));
             await analyzeWithAI(formData);
         }
 
@@ -604,11 +800,19 @@
                 if (!response.ok) throw new Error('API Error');
                 
                 const result = await response.json();
+                
+                clearInterval(window.loadingInterval);
+                document.getElementById('percentage').textContent = '100%';
+                updateStep(3, 'done');
+                
+                await new Promise(r => setTimeout(r, 800));
                 displayResult(result);
                 goToResult();
             } catch (error) {
                 console.error('분석 오류:', error);
-                document.querySelector('.step-loading .loading-text').textContent = '분석 중 오류가 발생했습니다.';
+                clearInterval(window.loadingInterval);
+                alert('분석 중 오류가 발생했습니다.');
+                goToForm();
             }
         }
 
@@ -625,6 +829,42 @@
             const rehire = result.rehireMonths || 0;
             document.getElementById('rehireValue').textContent = rehire + '개월';
             document.getElementById('rehireDescription').textContent = result.rehireDescription || '업계 평균';
+
+            // 추가 조언
+            generateAdvice(score, survival, rehire);
+
+            // 결과 저장
+            window.lastResult = result;
+        }
+
+        function generateAdvice(score, survival, rehire) {
+            let advice = '';
+            
+            if (score >= 75) {
+                advice = '✅ 재무 상태가 안정적입니다. 충분한 시간을 가지고 신중히 결정하세요.';
+            } else if (score >= 50) {
+                advice = '🤔 중간 수준의 안정성입니다. 몇 달간의 생활비 확보 후 진행을 고려하세요.';
+            } else {
+                advice = '⚠️ 현재는 조금 더 준비가 필요합니다. 비상금을 늘리거나 재취업 계획을 세우세요.';
+            }
+
+            document.getElementById('adviceText').textContent = advice;
+        }
+
+        function shareResult() {
+            if (!window.lastResult) return;
+            
+            const result = window.lastResult;
+            const text = `퇴사렌즈 분석 결과\n점수: ${result.score}점\n생존기간: ${result.survivalMonths}개월\n재취업기간: ${result.rehireMonths}개월\n${result.scoreDescription}`;
+            
+            if (navigator.share) {
+                navigator.share({
+                    title: '퇴사렌즈',
+                    text: text
+                });
+            } else {
+                alert(text);
+            }
         }
     </script>
 </body>
