@@ -1,0 +1,28 @@
+{
+  "name": "toesalens",
+  "version": "1.0.0",
+  "description": "AI가 현재 재무상태와 커리어 경쟁력을 분석하여 '지금 퇴사해도 되는지' 판단해주는 서비스",
+  "main": "server.js",
+  "scripts": {
+    "dev": "node server.js",
+    "start": "node server.js",
+    "vercel-build": "echo 'Build complete'",
+    "test": "echo 'No tests yet'"
+  },
+  "keywords": [
+    "career",
+    "resignation",
+    "AI",
+    "finance",
+    "apps-in-toss"
+  ],
+  "author": "Your Name",
+  "license": "MIT",
+  "dependencies": {
+    "@anthropic-ai/sdk": "^0.20.0",
+    "cors": "^2.8.5",
+    "dotenv": "^16.0.3",
+    "express": "^4.18.2"
+  },
+  "devDependencies": {}
+}
