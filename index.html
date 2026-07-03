@@ -1,947 +1,1091 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>퇴사, 지금어때? - AI 기반 퇴사 판단</title>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        body {
-            font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-            background: linear-gradient(135deg, #f5f7fa 0%, #e8eef5 100%);
-            color: #1a1a1a;
-            min-height: 100vh;
-            padding: 0;
-            overflow-x: hidden;
-        }
-
-        .container {
-            max-width: 480px;
-            margin: 0 auto;
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-            background: white;
-            box-shadow: 0 0 40px rgba(0, 0, 0, 0.08);
-        }
-
-        /* ==================== STEP 1: INTRO ==================== */
-        .step-intro {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            padding: 40px 20px;
-            text-align: center;
-            background: linear-gradient(135deg, #ffffff 0%, #f8f9fb 100%);
-        }
-
-        .intro-icon {
-            font-size: 64px;
-            margin-bottom: 20px;
-            animation: float 3s ease-in-out infinite;
-        }
-
-        .intro-title {
-            font-size: 32px;
-            font-weight: 900;
-            margin-bottom: 12px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-        }
-
-        .intro-subtitle {
-            font-size: 16px;
-            color: #666;
-            margin-bottom: 40px;
-            line-height: 1.5;
-            font-weight: 500;
-        }
-
-        .intro-subtitle-en {
-            font-size: 12px;
-            color: #999;
-            margin-bottom: 40px;
-            font-weight: 400;
-            letter-spacing: 0.5px;
-        }
-
-        .btn-start {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            border: none;
-            color: white;
-            padding: 14px 40px;
-            font-size: 16px;
-            font-weight: 600;
-            border-radius: 12px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            box-shadow: 0 8px 24px rgba(102, 126, 234, 0.3);
-        }
-
-        .btn-start:active {
-            transform: scale(0.98);
-        }
-
-        /* ==================== STEP 2: FORM ==================== */
-        .step-form {
-            flex: 1;
-            overflow-y: auto;
-            padding: 0;
-            background: linear-gradient(135deg, #f8f9fb 0%, #f0f4ff 100%);
-        }
-
-        .form-quote {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            padding: 24px 20px;
-            text-align: center;
-            color: white;
-            margin-bottom: 0;
-            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.2);
-        }
-
-        .quote-text {
-            font-size: 14px;
-            font-weight: 600;
-            line-height: 1.6;
-            margin-bottom: 8px;
-        }
-
-        .quote-author {
-            font-size: 12px;
-            opacity: 0.85;
-            font-style: italic;
-        }
-
-        .form-header {
-            text-align: center;
-            margin-bottom: 24px;
-            padding: 24px 20px 0;
-        }
-
-        .form-title {
-            font-size: 22px;
-            font-weight: 700;
-            margin-bottom: 6px;
-            color: #1a1a1a;
-        }
-
-        .form-subtitle {
-            font-size: 13px;
-            color: #888;
-        }
-
-        .form-content {
-            padding: 0 20px 20px;
-        }
-
-        .form-section {
-            margin-bottom: 24px;
-            background: white;
-            padding: 16px;
-            border-radius: 12px;
-            border: 1px solid #e8eef5;
-            transition: all 0.2s ease;
-        }
-
-        .form-section:hover {
-            border-color: #667eea;
-            box-shadow: 0 2px 8px rgba(102, 126, 234, 0.08);
-        }
-
-        .form-label {
-            display: block;
-            font-size: 14px;
-            font-weight: 600;
-            margin-bottom: 8px;
-            color: #333;
-        }
-
-        .form-label-sub {
-            font-size: 12px;
-            color: #999;
-            font-weight: 400;
-            margin-top: 2px;
-        }
-
-        .input-group {
-            display: flex;
-            gap: 8px;
-            align-items: flex-end;
-        }
-
-        .form-input {
-            flex: 1;
-            background: #f5f7fa;
-            border: 2px solid #e8eef5;
-            color: #1a1a1a;
-            padding: 12px 14px;
-            border-radius: 8px;
-            font-size: 14px;
-            transition: all 0.2s ease;
-        }
-
-        .form-input::placeholder {
-            color: #ccc;
-            opacity: 1;
-        }
-
-        .form-input:focus {
-            outline: none;
-            border-color: #667eea;
-            background: #f8f9ff;
-            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
-        }
-
-        .input-unit {
-            font-size: 12px;
-            color: #999;
-            padding: 12px 8px;
-            font-weight: 500;
-        }
-
-        .form-select {
-            background: #f5f7fa;
-            border: 2px solid #e8eef5;
-            color: #1a1a1a;
-            padding: 12px 14px;
-            border-radius: 8px;
-            font-size: 14px;
-            cursor: pointer;
-            width: 100%;
-            transition: all 0.2s ease;
-        }
-
-        .form-select option {
-            color: #1a1a1a;
-        }
-
-        .form-select option:first-child {
-            color: #ccc;
-        }
-
-        .form-select:focus {
-            outline: none;
-            border-color: #667eea;
-            background: #f8f9ff;
-            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
-        }
-
-        .form-buttons {
-            display: flex;
-            gap: 10px;
-            margin-top: 30px;
-            padding: 0 20px 20px;
-        }
-
-        .btn-submit {
-            flex: 1;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            border: none;
-            color: white;
-            padding: 14px;
-            font-size: 16px;
-            font-weight: 600;
-            border-radius: 8px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-        }
-
-        .btn-submit:active {
-            transform: scale(0.98);
-        }
-
-        /* ==================== STEP 3: LOADING ==================== */
-        .step-loading {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            padding: 40px 20px;
-            background: linear-gradient(135deg, #ffffff 0%, #f8f9fb 100%);
-        }
-
-        .loading-content {
-            width: 100%;
-            max-width: 320px;
-        }
-
-        .loading-progress {
-            margin-bottom: 48px;
-            padding: 0 20px;
-        }
-
-        .loading-step {
-            display: flex;
-            align-items: center;
-            gap: 16px;
-            margin-bottom: 24px;
-            position: relative;
-            padding-left: 0;
-        }
-
-        .loading-step::after {
-            content: '';
-            position: absolute;
-            left: 18px;
-            top: 56px;
-            width: 2px;
-            height: 24px;
-            background: #e8eef5;
-        }
-
-        .loading-step.done::after {
-            background: #4caf50;
-        }
-
-        .loading-step:last-child::after {
-            display: none;
-        }
-
-        .loading-step.active .step-icon {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            animation: pulse 1s ease-in-out infinite;
-            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
-        }
-
-        .loading-step.done .step-icon {
-            background: #4caf50;
-            color: white;
-            animation: scaleIn 0.4s ease-out;
-        }
-
-        .loading-step.pending .step-icon {
-            background: #e8eef5;
-            color: #999;
-        }
-
-        .step-icon {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            width: 44px;
-            height: 44px;
-            border-radius: 50%;
-            font-weight: 600;
-            font-size: 20px;
-            flex-shrink: 0;
-            transition: all 0.3s ease;
-        }
-
-        .step-text {
-            flex: 1;
-        }
-
-        .step-label {
-            font-size: 14px;
-            font-weight: 700;
-            color: #1a1a1a;
-            margin-bottom: 4px;
-        }
-
-        .step-desc {
-            font-size: 12px;
-            color: #999;
-            margin-top: 0;
-        }
-
-        .loading-percentage {
-            text-align: center;
-            margin-top: 32px;
-        }
-
-        .percentage-number {
-            font-size: 36px;
-            font-weight: 700;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            margin-bottom: 8px;
-        }
-
-        .percentage-text {
-            font-size: 13px;
-            color: #999;
-        }
-
-        /* ==================== STEP 4: RESULT ==================== */
-        .step-result {
-            flex: 1;
-            overflow-y: auto;
-            padding: 20px;
-            background: white;
-        }
-
-        .result-header {
-            text-align: center;
-            margin-bottom: 30px;
-        }
-
-        .result-title {
-            font-size: 24px;
-            font-weight: 700;
-            margin-bottom: 8px;
-            color: #1a1a1a;
-        }
-
-        .result-card {
-            background: linear-gradient(135deg, #f8f9ff 0%, #f0f4ff 100%);
-            border: 2px solid #e8eef5;
-            border-radius: 12px;
-            padding: 20px;
-            margin-bottom: 16px;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .result-card::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            height: 4px;
-            background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
-        }
-
-        .card-label {
-            font-size: 12px;
-            color: #999;
-            margin-bottom: 8px;
-            text-transform: uppercase;
-            font-weight: 600;
-            letter-spacing: 0.5px;
-        }
-
-        .card-value {
-            font-size: 36px;
-            font-weight: 700;
-            margin-bottom: 8px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-        }
-
-        .card-description {
-            font-size: 13px;
-            color: #666;
-            line-height: 1.4;
-        }
-
-        .score-bar {
-            width: 100%;
-            height: 8px;
-            background: #e8eef5;
-            border-radius: 4px;
-            overflow: hidden;
-            margin-top: 12px;
-        }
-
-        .score-fill {
-            height: 100%;
-            background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
-            border-radius: 4px;
-            transition: width 1s ease-out;
-        }
-
-        /* 결과 액션 */
-        .result-actions {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 10px;
-            margin-top: 20px;
-            margin-bottom: 20px;
-        }
-
-        .btn-action {
-            padding: 12px;
-            border: 2px solid #e8eef5;
-            background: white;
-            color: #667eea;
-            border-radius: 8px;
-            font-weight: 600;
-            font-size: 13px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-        }
-
-        .btn-action:hover {
-            background: #f8f9ff;
-            border-color: #667eea;
-        }
-
-        .btn-action.primary {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            border: none;
-            color: white;
-        }
-
-        .btn-action.primary:hover {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            opacity: 0.9;
-        }
-
-        /* 추가 정보 */
-        .result-info {
-            background: #f0f4ff;
-            border-left: 4px solid #667eea;
-            padding: 16px;
-            border-radius: 8px;
-            margin-top: 20px;
-            margin-bottom: 20px;
-        }
-
-        .info-title {
-            font-size: 13px;
-            font-weight: 700;
-            color: #333;
-            margin-bottom: 8px;
-        }
-
-        .info-text {
-            font-size: 12px;
-            color: #666;
-            line-height: 1.5;
-        }
-
-        /* ==================== ANIMATIONS ==================== */
-        @keyframes float {
-            0%, 100% { transform: translateY(0px); }
-            50% { transform: translateY(-10px); }
-        }
-
-        @keyframes pulse {
-            0%, 100% { opacity: 1; transform: scale(1); }
-            50% { opacity: 0.8; transform: scale(1.05); }
-        }
-
-        @keyframes scaleIn {
-            0% { transform: scale(0.8); opacity: 0; }
-            100% { transform: scale(1); opacity: 1; }
-        }
-
-        .hidden {
-            display: none !important;
-        }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>퇴사, 지금어때? — 퇴사 준비도 진단</title>
+<link rel="preconnect" href="https://cdn.jsdelivr.net">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.css">
+<style>
+:root{
+  --ink:#0B1220;
+  --ink-2:#151E30;
+  --blue:#0051FF;
+  --blue-600:#0043D6;
+  --blue-soft:#E8EFFF;
+  --surface:#FFFFFF;
+  --bg:#F4F6FB;
+  --line:#E7EBF3;
+  --text:#111726;
+  --muted:#6B7688;
+  --muted-2:#9AA3B2;
+  --green:#0FB981;
+  --amber:#F59E0B;
+  --red:#EF4444;
+  --mono:'SF Mono','JetBrains Mono',ui-monospace,'Menlo',monospace;
+  --shadow:0 10px 30px rgba(15,25,50,.08);
+  --shadow-sm:0 2px 10px rgba(15,25,50,.05);
+}
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+html,body{height:100%;}
+body{
+  font-family:'Pretendard',-apple-system,BlinkMacSystemFont,sans-serif;
+  color:var(--text);
+  background:var(--bg);
+  font-feature-settings:'tnum';
+  -webkit-font-smoothing:antialiased;
+}
+.app{
+  max-width:480px;margin:0 auto;min-height:100dvh;
+  background:var(--surface);position:relative;
+  box-shadow:0 0 60px rgba(15,25,50,.06);
+  display:flex;flex-direction:column;overflow:hidden;
+}
+.screen{display:none;flex:1;flex-direction:column;min-height:0;}
+.screen.active{display:flex;}
+
+/* 토스 배너 광고 바 */
+#toss-ad-container{display:none;flex-shrink:0;padding:8px 12px;background:#fff;border-bottom:1px solid var(--line);}
+#toss-ad-container.show{display:block;}
+.app.on-intro #toss-ad-container{display:none !important;}
+button{font-family:inherit;cursor:pointer;border:none;background:none;}
+:focus-visible{outline:3px solid rgba(0,81,255,.35);outline-offset:2px;border-radius:6px;}
+
+/* ============ INTRO ============ */
+#intro{
+  background:radial-gradient(120% 80% at 50% -10%, #17233E 0%, var(--ink) 55%, #070C16 100%);
+  color:#fff;justify-content:space-between;padding:0;
+}
+.intro-top{padding:56px 28px 0;}
+.eyebrow{
+  display:inline-flex;align-items:center;gap:7px;font-size:12px;font-weight:600;
+  letter-spacing:.04em;color:#9DB3FF;background:rgba(0,81,255,.16);
+  padding:7px 13px;border-radius:100px;margin-bottom:26px;
+}
+.eyebrow .dot{width:6px;height:6px;border-radius:50%;background:#5B86FF;box-shadow:0 0 10px #5B86FF;}
+.intro-title{font-size:38px;font-weight:800;line-height:1.12;letter-spacing:-.02em;}
+.intro-title b{color:#6B94FF;}
+.intro-sub{margin-top:16px;font-size:15px;line-height:1.6;color:#AEB8CC;font-weight:400;max-width:300px;}
+.intro-hero{
+  margin:auto 0;padding:0 28px;display:flex;justify-content:center;align-items:center;
+}
+/* verdict gauge preview */
+.gauge-preview{width:100%;max-width:280px;}
+.intro-metrics{
+  display:flex;gap:10px;padding:0 28px 4px;
+}
+.metric-chip{
+  flex:1;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.08);
+  border-radius:14px;padding:13px 12px;
+}
+.metric-chip .k{font-size:11px;color:#8A94A8;font-weight:500;margin-bottom:5px;}
+.metric-chip .v{font-size:14px;color:#DDE4F2;font-weight:700;font-family:var(--mono);}
+.intro-bottom{padding:22px 28px calc(30px + env(safe-area-inset-bottom));}
+.btn-primary{
+  width:100%;background:var(--blue);color:#fff;font-size:16px;font-weight:700;
+  padding:17px;border-radius:15px;transition:transform .12s, background .2s;
+  box-shadow:0 10px 24px rgba(0,81,255,.32);
+}
+.btn-primary:active{transform:scale(.985);background:var(--blue-600);}
+.intro-note{text-align:center;font-size:11px;color:#6E788E;margin-top:14px;}
+
+/* ============ WIZARD ============ */
+#wizard{background:var(--bg);}
+.wz-head{
+  background:var(--surface);padding:18px 20px 16px;border-bottom:1px solid var(--line);
+  position:sticky;top:0;z-index:5;
+}
+.wz-topbar{display:flex;align-items:center;gap:12px;margin-bottom:16px;}
+.wz-back{
+  width:36px;height:36px;border-radius:10px;background:var(--bg);
+  display:flex;align-items:center;justify-content:center;color:var(--muted);font-size:18px;
+  transition:background .15s;
+}
+.wz-back:active{background:var(--line);}
+.wz-count{font-size:13px;font-weight:600;color:var(--muted);font-family:var(--mono);}
+.wz-count b{color:var(--blue);}
+.progress-rail{height:5px;background:var(--line);border-radius:100px;overflow:hidden;}
+.progress-fill{height:100%;background:var(--blue);border-radius:100px;width:33.33%;transition:width .35s cubic-bezier(.4,0,.2,1);}
+
+.wz-body{flex:1;overflow-y:auto;padding:26px 20px 20px;-webkit-overflow-scrolling:touch;}
+.step-title{font-size:22px;font-weight:800;letter-spacing:-.01em;margin-bottom:5px;}
+.step-lead{font-size:13px;color:var(--muted);margin-bottom:24px;}
+.wz-step{display:none;animation:slideIn .3s ease;}
+.wz-step.active{display:block;}
+@keyframes slideIn{from{opacity:0;transform:translateX(14px);}to{opacity:1;transform:none;}}
+
+.field{margin-bottom:16px;}
+.field label{display:block;font-size:14px;font-weight:600;margin-bottom:9px;color:#26303F;}
+.field label .hint{font-size:12px;font-weight:400;color:var(--muted-2);margin-left:6px;}
+.money{
+  display:flex;align-items:center;background:var(--surface);border:1.5px solid var(--line);
+  border-radius:13px;padding:0 16px;transition:border-color .15s, box-shadow .15s;
+}
+.money:focus-within{border-color:var(--blue);box-shadow:0 0 0 4px var(--blue-soft);}
+.money input{
+  flex:1;border:none;background:none;outline:none;font-size:19px;font-weight:700;
+  font-family:var(--mono);padding:15px 0;color:var(--text);text-align:right;min-width:0;
+}
+.money input::placeholder{color:#C7CDD9;font-weight:500;}
+.money .unit{font-size:14px;color:var(--muted);font-weight:600;padding-left:10px;flex-shrink:0;}
+
+.chips{display:flex;flex-wrap:wrap;gap:8px;}
+.chip{
+  padding:11px 15px;border-radius:11px;background:var(--surface);border:1.5px solid var(--line);
+  font-size:14px;font-weight:600;color:#3A4454;transition:all .14s;
+}
+.chip:active{transform:scale(.96);}
+.chip.sel{background:var(--blue);border-color:var(--blue);color:#fff;box-shadow:0 6px 14px rgba(0,81,255,.24);}
+.chip-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;}
+.chip-grid .chip{text-align:center;}
+
+.wz-foot{
+  padding:14px 20px calc(16px + env(safe-area-inset-bottom));
+  background:var(--surface);border-top:1px solid var(--line);
+}
+.wz-foot .btn-primary{box-shadow:0 6px 16px rgba(0,81,255,.24);}
+.btn-primary:disabled{background:#C7CDD9;box-shadow:none;cursor:not-allowed;}
+
+/* ============ LOADING ============ */
+#loading{background:var(--bg);justify-content:center;padding:40px 32px;}
+.load-wrap{width:100%;max-width:300px;margin:0 auto;}
+.load-num{font-size:52px;font-weight:800;font-family:var(--mono);color:var(--ink);text-align:center;letter-spacing:-.02em;}
+.load-num span{color:var(--blue);}
+.load-cap{text-align:center;font-size:13px;color:var(--muted);margin:6px 0 40px;font-weight:500;}
+.load-steps{display:flex;flex-direction:column;gap:6px;}
+.ls{display:flex;align-items:center;gap:13px;padding:13px 15px;border-radius:13px;background:var(--surface);border:1px solid var(--line);opacity:.5;transition:all .3s;}
+.ls.on{opacity:1;border-color:var(--blue-soft);box-shadow:var(--shadow-sm);}
+.ls.done{opacity:1;}
+.ls-ico{width:30px;height:30px;border-radius:9px;background:var(--bg);display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;color:var(--muted-2);flex-shrink:0;transition:all .3s;}
+.ls.on .ls-ico{background:var(--blue);color:#fff;}
+.ls.done .ls-ico{background:var(--green);color:#fff;}
+.ls-txt{font-size:14px;font-weight:600;color:#2A3444;}
+
+/* ============ RESULT ============ */
+#result{background:var(--bg);overflow-y:auto;-webkit-overflow-scrolling:touch;}
+.res-hero{
+  background:radial-gradient(120% 90% at 50% 0%, #17233E 0%, var(--ink) 60%, #070C16 100%);
+  color:#fff;padding:26px 24px 30px;text-align:center;
+  border-radius:0 0 26px 26px;
+}
+.verdict-badge{
+  display:inline-flex;align-items:center;gap:7px;font-size:13px;font-weight:700;
+  padding:8px 15px;border-radius:100px;margin-top:14px;
+}
+.res-gauge{display:block;width:230px;max-width:64vw;margin:0 auto;}
+.res-score{font-family:var(--mono);font-weight:800;letter-spacing:-.02em;}
+.verdict-line{font-size:19px;font-weight:800;margin-top:4px;}
+.verdict-desc{font-size:13.5px;color:#AEB8CC;margin-top:12px;line-height:1.55;max-width:320px;margin-left:auto;margin-right:auto;}
+
+/* archetype */
+.archetype{margin-top:16px;}
+.arch-emoji{font-size:44px;line-height:1;margin-bottom:6px;animation:archPop .5s cubic-bezier(.2,.7,.3,1.3) both;}
+.arch-name{font-size:23px;font-weight:800;letter-spacing:-.01em;color:#fff;}
+@keyframes archPop{from{opacity:0;transform:scale(.5) translateY(8px);}to{opacity:1;transform:none;}}
+
+/* insight strip */
+.insight-strip{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:6px;}
+.insight{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:15px;box-shadow:var(--shadow-sm);}
+.ins-k{font-size:11.5px;color:var(--muted);font-weight:600;margin-bottom:6px;}
+.ins-v{font-size:20px;font-weight:800;color:var(--ink);letter-spacing:-.01em;}
+.ins-v b{color:var(--blue);font-family:var(--mono);}
+.ins-v.up{color:var(--green);}
+.ins-v.down{color:var(--red);}
+.ins-d{font-size:11px;color:var(--muted-2);margin-top:5px;line-height:1.3;}
+
+/* next-tier callout */
+.next-tier{display:flex;gap:13px;align-items:center;background:linear-gradient(120deg,#EEF3FF,#F7F9FF);border:1px solid var(--blue-soft);border-radius:16px;padding:15px 16px;margin-top:14px;}
+.nt-ico{font-size:24px;flex-shrink:0;}
+.nt-title{font-size:14px;font-weight:800;color:var(--ink);margin-bottom:3px;}
+.nt-desc{font-size:12.5px;color:var(--muted);line-height:1.45;}
+
+/* reason diagnosis */
+.reason-badge{display:inline-block;font-size:11.5px;font-weight:800;color:#fff;background:var(--blue);padding:5px 11px;border-radius:100px;margin-bottom:12px;}
+.reason-summary{font-size:14px;font-weight:600;line-height:1.6;color:#26303F;margin-bottom:15px;}
+.reason-list{display:flex;flex-direction:column;gap:9px;}
+.reason-item{background:var(--bg);border-radius:12px;padding:12px 13px;}
+.reason-item b{display:block;font-size:13px;font-weight:800;color:var(--blue);margin-bottom:3px;}
+.reason-item span{font-size:12.5px;color:var(--muted);line-height:1.45;}
+
+.res-body{padding:20px 18px 40px;}
+.section-eyebrow{font-size:12px;font-weight:700;color:var(--muted-2);letter-spacing:.04em;text-transform:uppercase;margin:26px 4px 12px;}
+.section-eyebrow:first-child{margin-top:6px;}
+
+/* breakdown bars */
+.card{background:var(--surface);border:1px solid var(--line);border-radius:18px;padding:18px;box-shadow:var(--shadow-sm);}
+.bd-row{margin-bottom:16px;}
+.bd-row:last-child{margin-bottom:0;}
+.bd-top{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:8px;}
+.bd-name{font-size:14px;font-weight:700;}
+.bd-name .sub{font-size:11px;color:var(--muted-2);font-weight:500;margin-left:5px;}
+.bd-val{font-size:14px;font-weight:800;font-family:var(--mono);}
+.bd-track{height:9px;background:var(--bg);border-radius:100px;overflow:hidden;}
+.bd-bar{height:100%;border-radius:100px;width:0;transition:width .9s cubic-bezier(.3,0,.2,1);}
+
+/* stat cards */
+.stat-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+.stat{background:var(--surface);border:1px solid var(--line);border-radius:18px;padding:17px;box-shadow:var(--shadow-sm);}
+.stat .k{font-size:12px;color:var(--muted);font-weight:600;margin-bottom:8px;}
+.stat .v{font-size:30px;font-weight:800;font-family:var(--mono);color:var(--ink);letter-spacing:-.02em;line-height:1;}
+.stat .v small{font-size:15px;color:var(--muted);font-weight:700;margin-left:2px;}
+.stat .d{font-size:11.5px;color:var(--muted-2);margin-top:8px;line-height:1.4;}
+
+/* simulator */
+.sim{background:var(--surface);border:1px solid var(--line);border-radius:18px;padding:18px;box-shadow:var(--shadow-sm);}
+.sim-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;}
+.sim-head .t{font-size:15px;font-weight:800;}
+.sim-out{text-align:right;}
+.sim-out .n{font-size:26px;font-weight:800;font-family:var(--mono);color:var(--blue);letter-spacing:-.02em;}
+.sim-out .n small{font-size:14px;}
+.sim-out .l{font-size:11px;color:var(--muted-2);}
+.sim-runway{height:10px;background:var(--bg);border-radius:100px;overflow:hidden;margin-bottom:18px;}
+.sim-runway .fill{height:100%;background:linear-gradient(90deg,#0051FF,#4C86FF);border-radius:100px;width:0;transition:width .2s;}
+.slider{margin-bottom:15px;}
+.slider:last-child{margin-bottom:0;}
+.slider .lab{display:flex;justify-content:space-between;font-size:12.5px;margin-bottom:8px;}
+.slider .lab .name{color:var(--muted);font-weight:600;}
+.slider .lab .amt{font-weight:700;font-family:var(--mono);color:var(--text);}
+input[type=range]{
+  -webkit-appearance:none;appearance:none;width:100%;height:6px;border-radius:100px;
+  background:var(--line);outline:none;
+}
+input[type=range]::-webkit-slider-thumb{
+  -webkit-appearance:none;appearance:none;width:24px;height:24px;border-radius:50%;
+  background:#fff;border:2px solid var(--blue);box-shadow:0 2px 8px rgba(0,81,255,.35);cursor:pointer;
+}
+input[type=range]::-moz-range-thumb{width:22px;height:22px;border-radius:50%;background:#fff;border:2px solid var(--blue);box-shadow:0 2px 8px rgba(0,81,255,.35);cursor:pointer;}
+.sim-hint{font-size:11.5px;color:var(--muted-2);margin-top:14px;text-align:center;}
+
+/* checklist */
+.check{background:var(--surface);border:1px solid var(--line);border-radius:18px;padding:8px 6px;box-shadow:var(--shadow-sm);}
+.check-item{display:flex;align-items:flex-start;gap:12px;padding:13px 12px;border-radius:12px;transition:background .15s;}
+.check-item:active{background:var(--bg);}
+.check-box{
+  width:22px;height:22px;border-radius:7px;border:2px solid var(--line);flex-shrink:0;margin-top:1px;
+  display:flex;align-items:center;justify-content:center;transition:all .15s;font-size:13px;color:#fff;
+}
+.check-item.on .check-box{background:var(--green);border-color:var(--green);}
+.check-txt{font-size:14px;font-weight:500;line-height:1.45;color:#2A3444;transition:color .15s;}
+.check-item.on .check-txt{color:var(--muted-2);text-decoration:line-through;}
+.ck-tag{display:inline-block;font-size:10px;font-weight:800;font-style:normal;color:var(--blue);background:var(--blue-soft);padding:2px 7px;border-radius:100px;margin-left:6px;vertical-align:middle;}
+.check-item.on .ck-tag{opacity:.5;}
+
+/* disclaimer + actions */
+.disclaimer{font-size:11.5px;color:var(--muted-2);line-height:1.6;text-align:center;margin:24px 8px 20px;}
+.res-actions{display:grid;grid-template-columns:1fr 1fr;gap:11px;}
+.btn-ghost{
+  padding:15px;border-radius:14px;background:var(--surface);border:1.5px solid var(--line);
+  font-size:14px;font-weight:700;color:#3A4454;transition:all .14s;
+}
+.btn-ghost:active{background:var(--bg);}
+.btn-blue{padding:15px;border-radius:14px;background:var(--blue);color:#fff;font-size:14px;font-weight:700;transition:transform .12s;}
+.btn-blue:active{transform:scale(.98);}
+
+.toast{
+  position:fixed;left:50%;bottom:30px;transform:translateX(-50%) translateY(20px);
+  background:var(--ink);color:#fff;font-size:13px;font-weight:600;padding:12px 20px;border-radius:100px;
+  opacity:0;pointer-events:none;transition:all .3s;z-index:50;box-shadow:0 8px 24px rgba(0,0,0,.25);
+}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
+
+@media (prefers-reduced-motion: reduce){
+  *{animation-duration:.01ms !important;transition-duration:.01ms !important;}
+}
+</style>
 </head>
 <body>
-    <div class="container">
-        <!-- STEP 1: INTRO -->
-        <div class="step-intro" id="stepIntro">
-            <div>
-                <div class="intro-icon">🔍</div>
-                <h1 class="intro-title">퇴사, 지금어때?</h1>
-                <p class="intro-subtitle-en">Resign or Wait?</p>
-                <p class="intro-subtitle">현실 기반 AI 퇴사 판단</p>
-                <button class="btn-start" onclick="goToForm()">AI 분석 시작</button>
-            </div>
-        </div>
+<div class="app on-intro">
 
-        <!-- STEP 2: FORM -->
-        <div class="step-form hidden" id="stepForm">
-            <!-- 명언 섹션 -->
-            <div class="form-quote">
-                <div class="quote-text">💡 "완벽한 타이밍은 없다.<br>준비가 되면 지금이 그때다."</div>
-                <div class="quote-author">— Steve Jobs</div>
-            </div>
+  <!-- 토스 배너 광고 (인트로 제외 전 화면 상단 노출) -->
+  <div id="toss-ad-container"></div>
 
-            <div class="form-header">
-                <div class="form-title">기본 정보 입력</div>
-                <div class="form-subtitle">현재 상황을 알려주세요</div>
-            </div>
+  <!-- ========== INTRO ========== -->
+  <section class="screen active" id="intro">
+    <div class="intro-top">
+      <span class="eyebrow"><span class="dot"></span>현실 기반 퇴사 준비도 진단</span>
+      <h1 class="intro-title">퇴사,<br><b>지금 어때?</b></h1>
+      <p class="intro-sub">감정 말고 숫자로. 재무·커리어·번아웃 3축으로 지금 나의 퇴사 준비도를 점수화합니다.</p>
+    </div>
+    <div class="intro-hero">
+      <svg class="gauge-preview" viewBox="0 0 280 160" aria-hidden="true">
+        <path d="M30,150 A110,110 0 0 1 250,150" fill="none" stroke="rgba(255,255,255,.1)" stroke-width="16" stroke-linecap="round"/>
+        <path id="introArc" d="M30,150 A110,110 0 0 1 250,150" fill="none" stroke="#6B94FF" stroke-width="16" stroke-linecap="round" stroke-dasharray="346" stroke-dashoffset="346"/>
+        <text x="140" y="110" text-anchor="middle" fill="#fff" font-size="46" font-weight="800" font-family="var(--mono)" id="introNum">0</text>
+        <text x="140" y="136" text-anchor="middle" fill="#8A94A8" font-size="12" font-weight="600">READINESS</text>
+      </svg>
+    </div>
+    <div class="intro-metrics">
+      <div class="metric-chip"><div class="k">생존 가능 기간</div><div class="v">비상금 기준</div></div>
+      <div class="metric-chip"><div class="k">재취업 기간</div><div class="v">직무별</div></div>
+      <div class="metric-chip"><div class="k">준비 점수</div><div class="v">0~100</div></div>
+    </div>
+    <div class="intro-bottom">
+      <button class="btn-primary" onclick="Nav.toWizard()">진단 시작하기</button>
+      <p class="intro-note">약 30초 · 입력값은 저장·전송되지 않습니다</p>
+    </div>
+  </section>
 
-            <div class="form-content">
-                <form onsubmit="submitForm(event)">
-                    <div class="form-section">
-                        <label class="form-label">연 봉 <div class="form-label-sub">만원 단위</div></label>
-                        <div class="input-group">
-                            <input type="number" class="form-input" id="salary" placeholder="4500" required>
-                            <div class="input-unit">만원</div>
-                        </div>
-                    </div>
-
-                    <div class="form-section">
-                        <label class="form-label">월 실수령액 <div class="form-label-sub">세금·공제 후</div></label>
-                        <div class="input-group">
-                            <input type="number" class="form-input" id="monthlyIncome" placeholder="300" required>
-                            <div class="input-unit">만원</div>
-                        </div>
-                    </div>
-
-                    <div class="form-section">
-                        <label class="form-label">비상금 <div class="form-label-sub">현금/예금</div></label>
-                        <div class="input-group">
-                            <input type="number" class="form-input" id="savings" placeholder="2000" required>
-                            <div class="input-unit">만원</div>
-                        </div>
-                    </div>
-
-                    <div class="form-section">
-                        <label class="form-label">월 고정지출 <div class="form-label-sub">집세, 생활비 등</div></label>
-                        <div class="input-group">
-                            <input type="number" class="form-input" id="monthlyExpense" placeholder="150" required>
-                            <div class="input-unit">만원</div>
-                        </div>
-                    </div>
-
-                    <div class="form-section">
-                        <label class="form-label">대출금 <div class="form-label-sub">없으면 0</div></label>
-                        <div class="input-group">
-                            <input type="number" class="form-input" id="debt" placeholder="0" value="0" required>
-                            <div class="input-unit">만원</div>
-                        </div>
-                    </div>
-
-                    <div class="form-section">
-                        <label class="form-label">경력 연차</label>
-                        <select class="form-select" id="experience" required>
-                            <option value="">선택하세요</option>
-                            <option value="1">1년 미만</option>
-                            <option value="3">1~3년</option>
-                            <option value="5">3~5년</option>
-                            <option value="7">5~7년</option>
-                            <option value="10">7~10년</option>
-                            <option value="10+">10년 이상</option>
-                        </select>
-                    </div>
-
-                    <div class="form-section">
-                        <label class="form-label">현재 직무</label>
-                        <select class="form-select" id="currentRole" required>
-                            <option value="">선택하세요</option>
-                            <option value="개발">개발</option>
-                            <option value="PM/기획">PM/기획</option>
-                            <option value="디자인">디자인</option>
-                            <option value="마케팅">마케팅</option>
-                            <option value="영업">영업</option>
-                            <option value="CS">CS</option>
-                            <option value="기타">기타</option>
-                        </select>
-                    </div>
-
-                    <div class="form-section">
-                        <label class="form-label">회사 규모</label>
-                        <select class="form-select" id="companySize" required>
-                            <option value="">선택하세요</option>
-                            <option value="스타트업">스타트업</option>
-                            <option value="중소기업">중소기업</option>
-                            <option value="중견기업">중견기업</option>
-                            <option value="대기업">대기업</option>
-                        </select>
-                    </div>
-
-                    <div class="form-section">
-                        <label class="form-label">스트레스 수준</label>
-                        <select class="form-select" id="stressLevel" required>
-                            <option value="">선택하세요</option>
-                            <option value="낮음">낮음</option>
-                            <option value="중간">중간</option>
-                            <option value="높음">높음</option>
-                            <option value="매우높음">매우 높음</option>
-                        </select>
-                    </div>
-
-                    <div class="form-buttons">
-                        <button type="button" class="btn-start" style="background: #f5f7fa; color: #667eea; border: 2px solid #e8eef5;" onclick="goToIntro()">뒤로</button>
-                        <button type="submit" class="btn-submit">AI 분석 시작</button>
-                    </div>
-                </form>
-            </div>
-        </div>
-
-        <!-- STEP 3: LOADING -->
-        <div class="step-loading hidden" id="stepLoading">
-            <div class="loading-content">
-                <div class="loading-progress">
-                    <div class="loading-step active" id="step1">
-                        <div class="step-icon">✓</div>
-                        <div class="step-text">
-                            <div class="step-label">재무 상태 분석</div>
-                            <div class="step-desc">비상금과 생활비 기반 분석 중</div>
-                        </div>
-                    </div>
-
-                    <div class="loading-step pending" id="step2">
-                        <div class="step-icon">2</div>
-                        <div class="step-text">
-                            <div class="step-label">커리어 경쟁력 평가</div>
-                            <div class="step-desc">시장 수요도 분석 진행</div>
-                        </div>
-                    </div>
-
-                    <div class="loading-step pending" id="step3">
-                        <div class="step-icon">3</div>
-                        <div class="step-text">
-                            <div class="step-label">퇴사 가능성 판정</div>
-                            <div class="step-desc">종합 평가 및 추천</div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="loading-percentage">
-                    <div class="percentage-number" id="percentage">0%</div>
-                    <div class="percentage-text">분석 진행 중...</div>
-                </div>
-            </div>
-        </div>
-
-        <!-- STEP 4: RESULT -->
-        <div class="step-result hidden" id="stepResult">
-            <div class="result-header">
-                <div class="result-title">분석 결과</div>
-            </div>
-
-            <div class="result-card">
-                <div class="card-label">퇴사 추천 점수</div>
-                <div class="card-value" id="scoreValue">0</div>
-                <div class="score-bar">
-                    <div class="score-fill" id="scoreBar" style="width: 0%"></div>
-                </div>
-                <div class="card-description" id="scoreDescription">분석 중...</div>
-            </div>
-
-            <div class="result-card">
-                <div class="card-label">생존 가능 기간</div>
-                <div class="card-value" id="survivalValue">0개월</div>
-                <div class="card-description" id="survivalDescription">현금 기준</div>
-            </div>
-
-            <div class="result-card">
-                <div class="card-label">예상 재취업 기간</div>
-                <div class="card-value" id="rehireValue">0개월</div>
-                <div class="card-description" id="rehireDescription">직무별 평균</div>
-            </div>
-
-            <!-- 추가 정보 -->
-            <div class="result-info">
-                <div class="info-title">💡 당신에게 필요한 것</div>
-                <div class="info-text" id="adviceText">
-                    현재 분석 결과 기반 조언이 여기에 표시됩니다.
-                </div>
-            </div>
-
-            <!-- 액션 버튼 -->
-            <div class="result-actions">
-                <button class="btn-action" onclick="shareResult()">📤 공유하기</button>
-                <button class="btn-action primary" onclick="goToForm()">📊 다시 분석</button>
-            </div>
-        </div>
+  <!-- ========== WIZARD ========== -->
+  <section class="screen" id="wizard">
+    <div class="wz-head">
+      <div class="wz-topbar">
+        <button class="wz-back" onclick="Wizard.back()" aria-label="이전">←</button>
+        <span class="wz-count">STEP <b id="wzCur">1</b> / 3</span>
+      </div>
+      <div class="progress-rail"><div class="progress-fill" id="wzProgress"></div></div>
     </div>
 
-    <!-- Firebase 초기화 -->
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/12.13.0/firebase-app.js";
-        import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/12.13.0/firebase-firestore.js";
+    <div class="wz-body">
+      <!-- STEP 1: 재무 -->
+      <div class="wz-step active" data-step="1">
+        <h2 class="step-title">지금 얼마나 버틸 수 있나요?</h2>
+        <p class="step-lead">퇴사 후 생존 가능 기간을 계산합니다. 만원 단위로 입력하세요.</p>
 
-        const firebaseConfig = {
-            apiKey: "AIzaSyDSgacyvysPYbZB_-p1VF4RwxaMRUtRz0s",
-            authDomain: "toesalens-admin.firebaseapp.com",
-            projectId: "toesalens-admin",
-            storageBucket: "toesalens-admin.firebasestorage.app",
-            messagingSenderId: "202198810061",
-            appId: "1:202198810061:web:04d36a6425c986c90ed884"
-        };
+        <div class="field">
+          <label>비상금 <span class="hint">현금·예금</span></label>
+          <div class="money"><input type="text" inputmode="numeric" id="savings" placeholder="2,000"><span class="unit">만원</span></div>
+        </div>
+        <div class="field">
+          <label>월 고정지출 <span class="hint">집세·생활비 등</span></label>
+          <div class="money"><input type="text" inputmode="numeric" id="monthlyExpense" placeholder="150"><span class="unit">만원</span></div>
+        </div>
+        <div class="field">
+          <label>대출 잔액 <span class="hint">없으면 0</span></label>
+          <div class="money"><input type="text" inputmode="numeric" id="debt" placeholder="0"><span class="unit">만원</span></div>
+        </div>
+        <div class="field">
+          <label>월 실수령액 <span class="hint">세후, 재취업 목표치</span></label>
+          <div class="money"><input type="text" inputmode="numeric" id="monthlyIncome" placeholder="300"><span class="unit">만원</span></div>
+        </div>
+      </div>
 
-        const app = initializeApp(firebaseConfig);
-        const db = getFirestore(app);
+      <!-- STEP 2: 커리어 -->
+      <div class="wz-step" data-step="2">
+        <h2 class="step-title">시장에서 나의 위치는?</h2>
+        <p class="step-lead">경력·직무·회사 규모로 재취업 경쟁력을 추정합니다.</p>
 
-        window.firebaseDb = db;
-        window.firebaseDoc = doc;
-        window.firebaseGetDoc = getDoc;
-    </script>
+        <div class="field">
+          <label>경력 연차</label>
+          <div class="chips" data-group="experience">
+            <button class="chip" data-val="1">1년 미만</button>
+            <button class="chip" data-val="3">1~3년</button>
+            <button class="chip" data-val="5">3~5년</button>
+            <button class="chip" data-val="7">5~7년</button>
+            <button class="chip" data-val="10">7~10년</button>
+            <button class="chip" data-val="10+">10년+</button>
+          </div>
+        </div>
+        <div class="field">
+          <label>현재 직무</label>
+          <div class="chips chip-grid" data-group="currentRole">
+            <button class="chip" data-val="개발">개발</button>
+            <button class="chip" data-val="PM/기획">PM/기획</button>
+            <button class="chip" data-val="디자인">디자인</button>
+            <button class="chip" data-val="마케팅">마케팅</button>
+            <button class="chip" data-val="영업">영업</button>
+            <button class="chip" data-val="CS">CS</button>
+            <button class="chip" data-val="기타">기타</button>
+          </div>
+        </div>
+        <div class="field">
+          <label>회사 규모</label>
+          <div class="chips chip-grid" data-group="companySize">
+            <button class="chip" data-val="스타트업">스타트업</button>
+            <button class="chip" data-val="중소기업">중소기업</button>
+            <button class="chip" data-val="중견기업">중견기업</button>
+            <button class="chip" data-val="대기업">대기업</button>
+          </div>
+        </div>
+      </div>
 
-    <script>
-        function goToIntro() {
-            document.getElementById('stepIntro').classList.remove('hidden');
-            document.getElementById('stepForm').classList.add('hidden');
-            document.getElementById('stepLoading').classList.add('hidden');
-            document.getElementById('stepResult').classList.add('hidden');
+      <!-- STEP 3: 컨디션 -->
+      <div class="wz-step" data-step="3">
+        <h2 class="step-title">지금 마음은 어떤가요?</h2>
+        <p class="step-lead">번아웃 정도와 떠나려는 이유를 함께 봅니다.</p>
+
+        <div class="field">
+          <label>스트레스 수준</label>
+          <div class="chips chip-grid" data-group="stressLevel">
+            <button class="chip" data-val="낮음">낮음</button>
+            <button class="chip" data-val="중간">중간</button>
+            <button class="chip" data-val="높음">높음</button>
+            <button class="chip" data-val="매우높음">매우 높음</button>
+          </div>
+        </div>
+        <div class="field">
+          <label>퇴사를 고민하는 이유 <span class="hint">복수 선택 · 동기 진단용</span></label>
+          <div class="chips chip-grid" data-group="reason" data-multi>
+            <button class="chip" data-val="번아웃">번아웃·소진</button>
+            <button class="chip" data-val="보상">낮은 보상</button>
+            <button class="chip" data-val="성장">성장 정체</button>
+            <button class="chip" data-val="관계">사람·문화</button>
+            <button class="chip" data-val="이직">더 좋은 기회</button>
+            <button class="chip" data-val="휴식">쉼이 필요</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="wz-foot">
+      <button class="btn-primary" id="wzNext" onclick="Wizard.next()" disabled>다음</button>
+    </div>
+  </section>
+
+  <!-- ========== LOADING ========== -->
+  <section class="screen" id="loading">
+    <div class="load-wrap">
+      <div class="load-num"><span id="loadPct">0</span>%</div>
+      <div class="load-cap">준비도를 계산하는 중…</div>
+      <div class="load-steps">
+        <div class="ls" data-ls="1"><div class="ls-ico">1</div><div class="ls-txt">재무 런웨이 분석</div></div>
+        <div class="ls" data-ls="2"><div class="ls-ico">2</div><div class="ls-txt">커리어 경쟁력 평가</div></div>
+        <div class="ls" data-ls="3"><div class="ls-ico">3</div><div class="ls-txt">종합 판정</div></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ========== RESULT ========== -->
+  <section class="screen" id="result">
+    <div class="res-hero">
+      <svg class="res-gauge" viewBox="0 0 280 168" aria-hidden="true">
+        <path d="M30,150 A110,110 0 0 1 250,150" fill="none" stroke="rgba(255,255,255,.12)" stroke-width="18" stroke-linecap="round"/>
+        <path id="resArc" d="M30,150 A110,110 0 0 1 250,150" fill="none" stroke="#6B94FF" stroke-width="18" stroke-linecap="round" stroke-dasharray="346" stroke-dashoffset="346" style="transition:stroke-dashoffset 1.1s cubic-bezier(.3,0,.2,1), stroke .6s;"/>
+        <text x="140" y="112" text-anchor="middle" fill="#fff" class="res-score" font-size="52" id="resScore">0</text>
+        <text x="140" y="138" text-anchor="middle" fill="#8A94A8" font-size="12" font-weight="600">/ 100</text>
+      </svg>
+      <span class="verdict-badge" id="verdictBadge">판정</span>
+      <div class="archetype">
+        <div class="arch-emoji" id="archEmoji">🌱</div>
+        <div class="arch-name" id="archName">유형</div>
+      </div>
+      <div class="verdict-desc" id="verdictDesc"></div>
+    </div>
+
+    <div class="res-body">
+      <!-- 인사이트 스트립: 또래 백분위 + 재진단 비교 -->
+      <div class="insight-strip">
+        <div class="insight" id="insightPercentile">
+          <div class="ins-k">또래 대비</div>
+          <div class="ins-v">상위 <b id="pctVal">–</b>%</div>
+          <div class="ins-d" id="pctDesc">비슷한 조건 기준 (추정)</div>
+        </div>
+        <div class="insight" id="insightCompare">
+          <div class="ins-k">지난 진단 대비</div>
+          <div class="ins-v" id="cmpVal">첫 진단</div>
+          <div class="ins-d" id="cmpDesc">이번이 처음이에요</div>
+        </div>
+      </div>
+
+      <div class="section-eyebrow">점수 근거 · 3축 분해</div>
+      <div class="card" id="breakdown"></div>
+
+      <div class="section-eyebrow" id="reasonEyebrow" hidden>퇴사 동기 진단</div>
+      <div class="card reason-card" id="reasonCard" hidden></div>
+
+      <div class="section-eyebrow">핵심 지표</div>
+      <div class="stat-grid">
+        <div class="stat">
+          <div class="k">생존 가능 기간</div>
+          <div class="v" id="statSurvival">0<small>개월</small></div>
+          <div class="d" id="statSurvivalD">비상금 ÷ 월 지출</div>
+        </div>
+        <div class="stat">
+          <div class="k">예상 재취업 기간</div>
+          <div class="v" id="statRehire">0<small>개월</small></div>
+          <div class="d" id="statRehireD">직무·경력 기준</div>
+        </div>
+      </div>
+
+      <!-- 다음 단계까지 남은 거리 -->
+      <div class="next-tier" id="nextTier" hidden>
+        <div class="nt-ico">🎯</div>
+        <div class="nt-body">
+          <div class="nt-title" id="ntTitle"></div>
+          <div class="nt-desc" id="ntDesc"></div>
+        </div>
+      </div>
+
+      <div class="section-eyebrow">런웨이 시뮬레이터</div>
+      <div class="sim">
+        <div class="sim-head">
+          <div class="t">이렇게 바꾸면?</div>
+          <div class="sim-out"><div class="n" id="simMonths">0<small>개월</small></div><div class="l">생존 가능</div></div>
+        </div>
+        <div class="sim-runway"><div class="fill" id="simFill"></div></div>
+        <div class="slider">
+          <div class="lab"><span class="name">비상금</span><span class="amt" id="simSavingsLab">2,000만원</span></div>
+          <input type="range" id="simSavings" min="0" max="10000" step="100" value="2000">
+        </div>
+        <div class="slider">
+          <div class="lab"><span class="name">월 고정지출</span><span class="amt" id="simExpenseLab">150만원</span></div>
+          <input type="range" id="simExpense" min="50" max="500" step="10" value="150">
+        </div>
+        <div class="sim-hint" id="simHint">슬라이더를 움직여 목표 런웨이를 찾아보세요</div>
+      </div>
+
+      <div class="section-eyebrow">퇴사 전 체크리스트</div>
+      <div class="check" id="checklist"></div>
+
+      <p class="disclaimer">본 진단은 입력값 기반의 참고용 추정이며, 재무·커리어 결정을 대신하지 않습니다. 계산은 기기 안에서만 이뤄지고, 재진단 비교를 위해 직전 점수만 이 기기에 저장됩니다.</p>
+
+      <div class="res-actions">
+        <button class="btn-ghost" onclick="Result.shareCard()">🖼️ 카드 공유</button>
+        <button class="btn-blue" onclick="Nav.restart()">다시 진단</button>
+      </div>
+    </div>
+  </section>
+
+  <div class="toast" id="toast"></div>
+</div>
+
+<script>
+/* =========================================================
+   퇴사, 지금어때? v2
+   - 클라이언트 사이드 스코어링 엔진 (기본)
+   - 백엔드 AI 연동은 CONFIG.USE_BACKEND = true 로 활성화
+   ========================================================= */
+
+const CONFIG = {
+  USE_BACKEND: false,                                   // true 로 켜면 Vercel API 사용, 실패 시 로컬 폴백
+  API_URL: 'https://toesalens.vercel.app/api/analyze',  // 기존 엔드포인트
+  weights: { survival: 40, career: 40, stress: 20 },    // 가중치 (백엔드 config로 대체 가능)
+};
+
+const state = {
+  savings:null, monthlyExpense:null, debt:0, monthlyIncome:null,
+  experience:null, currentRole:null, companySize:null,
+  stressLevel:null, reason:[],
+  result:null,
+};
+
+/* ---------- 유틸 ---------- */
+const $ = s => document.querySelector(s);
+const clamp = (v,a,b)=>Math.max(a,Math.min(b,v));
+const round1 = v=>Math.round(v*10)/10;
+const fmt = n => (n==null||isNaN(n))?'':Number(n).toLocaleString('ko-KR');
+const parseNum = str => { const n = parseInt(String(str).replace(/[^\d]/g,''),10); return isNaN(n)?null:n; };
+
+function toast(msg){
+  const t=$('#toast'); t.textContent=msg; t.classList.add('show');
+  clearTimeout(t._tm); t._tm=setTimeout(()=>t.classList.remove('show'),1800);
+}
+
+/* ---------- 화면 전환 ---------- */
+const Nav = {
+  go(id){ document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active')); $('#'+id).classList.add('active'); document.querySelector('.app').classList.toggle('on-intro', id==='intro'); window.scrollTo(0,0); document.querySelector('.app').scrollTop=0; },
+  toWizard(){ Wizard.reset(); this.go('wizard'); },
+  restart(){ Wizard.reset(); this.go('wizard'); },
+};
+
+/* ---------- 인트로 게이지: 값이 계속 오르내리는 라이브 스캔 ---------- */
+(function introGauge(){
+  const arc=$('#introArc'), num=$('#introNum'), LEN=346;
+  const colorFor = v => v>=75?'#3DD6A0' : v>=55?'#6B94FF' : v>=40?'#FBBF5A' : '#FF7A7A';
+  const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  arc.style.transition='stroke .5s ease';   // 색만 CSS 전환, 채움/숫자는 매 프레임 직접 갱신
+  if(reduce){ const v=72; arc.style.strokeDashoffset=LEN*(1-v/100); arc.style.stroke=colorFor(v); num.textContent=v; return; }
+
+  let cur=0, target=72, dwell=0, last=performance.now();
+  const pick = ()=> 32 + Math.round(Math.random()*62);   // 32~94 사이를 배회
+  function frame(now){
+    const dt=Math.min(48, now-last); last=now;
+    if($('#intro').classList.contains('active')){
+      cur += (target-cur)*0.07;                          // 목표값으로 부드럽게 접근
+      if(Math.abs(target-cur)<0.5){ dwell+=dt; if(dwell>600){ target=pick(); dwell=0; } }
+      const v=Math.round(cur);
+      arc.style.strokeDashoffset = LEN*(1-cur/100);
+      arc.style.stroke = colorFor(v);
+      num.textContent = v;
+    }
+    requestAnimationFrame(frame);
+  }
+  window.addEventListener('load', ()=>setTimeout(()=>requestAnimationFrame(frame),300));
+})();
+
+/* ---------- 위저드 ---------- */
+const Wizard = {
+  step:1, total:3,
+  reset(){ this.step=1; this.render(); },
+  render(){
+    document.querySelectorAll('.wz-step').forEach(s=>s.classList.toggle('active', +s.dataset.step===this.step));
+    $('#wzCur').textContent=this.step;
+    $('#wzProgress').style.width=(this.step/this.total*100)+'%';
+    $('#wzNext').textContent = this.step===this.total ? '결과 보기' : '다음';
+    this.validate();
+    $('.wz-body').scrollTop=0;
+  },
+  back(){ if(this.step===1){ Nav.go('intro'); } else { this.step--; this.render(); } },
+  next(){
+    if(!this.stepValid()) return;
+    if(this.step===this.total){ Analyze.start(); }
+    else { this.step++; this.render(); }
+  },
+  stepValid(){
+    if(this.step===1) return state.savings!=null && state.monthlyExpense!=null && state.monthlyIncome!=null;
+    if(this.step===2) return state.experience && state.currentRole && state.companySize;
+    if(this.step===3) return !!state.stressLevel;
+    return false;
+  },
+  validate(){ $('#wzNext').disabled = !this.stepValid(); },
+};
+
+/* 숫자 입력: 콤마 포맷 + state 반영 */
+['savings','monthlyExpense','debt','monthlyIncome'].forEach(id=>{
+  const el=$('#'+id);
+  el.addEventListener('input',()=>{
+    const n=parseNum(el.value);
+    el.value = n==null?'':fmt(n);
+    state[id] = (id==='debt') ? (n||0) : n;
+    Wizard.validate();
+  });
+});
+
+/* 칩 선택 */
+document.querySelectorAll('.chips').forEach(group=>{
+  const key=group.dataset.group;
+  const multi=group.hasAttribute('data-multi');
+  group.addEventListener('click',e=>{
+    const btn=e.target.closest('.chip'); if(!btn) return;
+    if(multi){
+      btn.classList.toggle('sel');
+      state[key]=[...group.querySelectorAll('.chip.sel')].map(c=>c.dataset.val);
+    }else{
+      group.querySelectorAll('.chip').forEach(c=>c.classList.remove('sel'));
+      btn.classList.add('sel');
+      state[key]=btn.dataset.val;
+    }
+    Wizard.validate();
+  });
+});
+
+/* ---------- 스코어링 엔진 ---------- */
+function computeLocal(d){
+  const expense=Math.max(1,d.monthlyExpense);
+  const debtMonthly = d.debt>0 ? Math.round(d.debt/36) : 0;   // 대출 3년 상환 가정
+  const burn = expense + debtMonthly;
+  const survivalMonths = Math.floor(d.savings/burn);
+  const survivalScore = clamp(Math.round(survivalMonths/12*100),0,100); // 12개월 런웨이=만점
+
+  const expMap={'1':30,'3':50,'5':65,'7':78,'10':88,'10+':92};
+  let careerScore = expMap[d.experience] ?? 50;
+  careerScore += ({'개발':12,'PM/기획':4,'디자인':2,'마케팅':2,'영업':4,'CS':-2,'기타':-4}[d.currentRole] ?? 0);
+  careerScore += ({'스타트업':2,'중소기업':0,'중견기업':3,'대기업':6}[d.companySize] ?? 0);
+  careerScore = clamp(careerScore,0,100);
+
+  const stressScore = {'낮음':20,'중간':50,'높음':78,'매우높음':95}[d.stressLevel] ?? 50;
+
+  const w=CONFIG.weights, wsum=w.survival+w.career+w.stress;
+  const score = Math.round((survivalScore*w.survival + careerScore*w.career + stressScore*w.stress)/wsum);
+
+  let rehire = ({'개발':1.5,'PM/기획':2.5,'디자인':2.5,'마케팅':2.5,'영업':2,'CS':2,'기타':3}[d.currentRole] ?? 2.5);
+  rehire = clamp(round1(rehire*(1+(60-careerScore)/100)),0.5,8);
+
+  return { score, survivalScore, careerScore, stressScore, survivalMonths, rehireMonths:rehire, burn, debtMonthly };
+}
+
+function verdictOf(score){
+  if(score>=75) return {key:'go', line:'지금이 기회입니다', color:'var(--green)',
+    desc:'재무 런웨이와 커리어 경쟁력이 충분합니다. 타이밍을 계획하고 실행에 옮길 단계예요.'};
+  if(score>=55) return {key:'ready', line:'거의 준비됐습니다', color:'#4C86FF',
+    desc:'큰 틀은 갖춰졌습니다. 부족한 한두 축만 보완하면 안전하게 움직일 수 있어요.'};
+  if(score>=40) return {key:'soon', line:'조금만 더', color:'var(--amber)',
+    desc:'방향은 맞지만 완충이 부족합니다. 비상금이나 이직 준비를 몇 달 더 다지길 권합니다.'};
+  return {key:'wait', line:'아직 이릅니다', color:'var(--red)',
+    desc:'감정적 소진은 크지만 재무·커리어 기반이 약합니다. 먼저 안전망을 만드는 게 우선입니다.'};
+}
+
+/* ---------- 퇴사 유형(아키타입): 재무·커리어·번아웃 상/하 8조합 ---------- */
+const ARCHETYPES = {
+  // F(재무) C(커리어) B(번아웃)  H=상, L=하
+  HHH:{emoji:'🚀', name:'즉시 이륙형', tag:'돈·실력·의지 3박자 완성. 지금 떠나도 됩니다.'},
+  HHL:{emoji:'🪑', name:'여유로운 관망형', tag:'떠날 힘은 충분, 급할 건 없는 갑(甲)의 위치.'},
+  HLH:{emoji:'🏝️', name:'런웨이 안식형', tag:'버틸 돈이 있으니, 잠시 쉬며 실력을 채우기 좋은 때.'},
+  HLL:{emoji:'🪴', name:'안정 정착형', tag:'흔들 이유가 없는 안정권. 지금은 축적할 시간.'},
+  LHH:{emoji:'🔥', name:'배수진 이직형', tag:'실력은 무기, 실탄은 부족. 퇴사보다 이직이 답.'},
+  LHL:{emoji:'💪', name:'곳간 채우기형', tag:'실력은 됐다, 이제 통장을 채울 차례.'},
+  LLH:{emoji:'⚠️', name:'벼랑 끝 충동형', tag:'떠나고픈 마음은 최고조, 안전망은 최저. 기반부터.'},
+  LLL:{emoji:'🌱', name:'성장 대기형', tag:'아직 이르지만 조급할 것 없다. 차근차근 쌓아갈 때.'},
+};
+function archetypeOf(r){
+  const F = r.survivalScore>=50 ? 'H':'L';   // 재무: 약 6개월 런웨이 기준
+  const C = r.careerScore  >=60 ? 'H':'L';   // 커리어 경쟁력
+  const B = r.stressScore  >=65 ? 'H':'L';   // 번아웃(떠날 이유)
+  return {...ARCHETYPES[F+C+B], code:F+C+B};
+}
+
+/* ---------- 퇴사 이유(복수) → 동기 진단 ---------- */
+const REASONS = {
+  번아웃:{label:'번아웃·소진', cat:'health',  tag:'소진은 이직만으로 안 풀릴 수 있어요. 회복 계획이 먼저.', item:'퇴사 전 최소 2주 회복 기간 계획'},
+  보상:  {label:'낮은 보상',   cat:'pursuit', tag:'시장가 대비 저평가라면 이직으로 해결될 가능성이 큽니다.', item:'동일 직무 시장 연봉 벤치마크 확인'},
+  성장:  {label:'성장 정체',   cat:'pursuit', tag:'성장은 다음 조직의 사수·프로젝트로 검증돼야 풀립니다.', item:'지원 회사의 성장 기회(사수·프로젝트) 구체 확인'},
+  관계:  {label:'사람·문화',   cat:'escape',  tag:'특정인 문제면 부서이동으로도 풀려요. 원인 분리가 관건.', item:'문제 원인이 특정인 vs 구조인지 분리'},
+  이직:  {label:'더 좋은 기회', cat:'pull',    tag:'당길 기회가 있다면 준비도와 별개로 실행을 검토하세요.', item:'오퍼·기회의 조건을 현 직장과 정량 비교'},
+  휴식:  {label:'쉼이 필요',   cat:'health',  tag:'번아웃 전조일 수 있어요. 휴직·안식월 등 대안을 먼저.', item:'휴직·안식월 등 퇴사 외 대안 먼저 검토'},
+};
+function analyzeReasons(arr){
+  if(!arr || !arr.length) return null;
+  const cats={pursuit:0,escape:0,health:0,pull:0};
+  const chips=[], items=[];
+  arr.forEach(k=>{ const r=REASONS[k]; if(!r) return; cats[r.cat]++; chips.push({label:r.label, tag:r.tag}); items.push(r.item); });
+  const pursuit=cats.pursuit+cats.pull, escape=cats.escape+cats.health;
+  let summary, badge;
+  if(cats.pull>0 && pursuit>=escape){
+    badge='추구형'; summary='당길 기회가 동기의 중심이에요. 퇴사 통보보다 이직 활동을 먼저 진행하는 편이 안전합니다.';
+  }else if(pursuit>escape){
+    badge='추구형'; summary='더 나은 조건을 향한 \u2018추구형\u2019 동기가 큽니다. 대부분 이직으로 해결 가능한 유형이에요.';
+  }else if(escape>pursuit){
+    badge='회피·회복형'; summary='현재 환경에서 벗어나려는 \u2018회피·회복형\u2019 동기가 큽니다. 원인을 분리하지 않으면 다음 직장에서 반복될 수 있어요.';
+  }else{
+    badge='혼합형'; summary='추구와 회피가 섞여 있어요. 이유마다 해결책이 다르니 우선순위를 정해보세요.';
+  }
+  return {chips, items, summary, badge};
+}
+
+/* ---------- 또래 백분위 (모델 분포 기반, 추후 실데이터로 승격) ---------- */
+function peerPercentile(score){
+  const below = 100/(1+Math.exp(-(score-50)/14)); // 로지스틱, 중앙값 50
+  return clamp(Math.round(100-below), 1, 99);      // 상위 %
+}
+
+/* ---------- 다음 단계까지 남은 거리 ---------- */
+const TIERS = [40,55,75];
+function nextTierGap(r){
+  const next = TIERS.find(t=>t>r.score);
+  if(!next) return null;                            // 이미 최고 등급
+  const need = next - r.score;                      // 올려야 할 점수
+  const w = CONFIG.weights, wsum=w.survival+w.career+w.stress;
+  // 재무(비상금)로 올릴 수 있는 여지: survivalScore 100까지
+  const survRoom = 100 - r.survivalScore;
+  const survScoreNeed = need * wsum / w.survival;   // 재무 축만으로 올릴 경우 필요한 survivalScore 상승폭
+  if(r.survivalScore < 100 && survScoreNeed <= survRoom + 0.5){
+    const savingsNeed = Math.ceil(survScoreNeed * 0.12 * r.burn / 10) * 10; // ΔsurvivalScore→비상금(만원)
+    const tierName = next>=75?'준비 완료(75점)': next>=55?'거의 준비(55점)':'다음 단계(40점)';
+    return {type:'savings', amount:savingsNeed, next, title:`비상금 ${fmt(savingsNeed)}만원만 더 모으면`, desc:`${tierName} 등급에 도달해요. 아래 시뮬레이터로 확인해 보세요.`};
+  }
+  // 재무만으론 부족 → 커리어/컨디션 영역
+  const tierName = next>=75?'준비 완료(75점)':'다음 단계';
+  return {type:'career', next, title:`다음 단계까지 ${need}점`, desc:`비상금만으로는 부족합니다. 경력·직무 경쟁력(재취업력)을 함께 끌어올려야 ${tierName}에 닿아요.`};
+}
+
+/* ---------- 직전 점수 저장/비교 (배포 환경 전용, 실패 시 무시) ---------- */
+const Store = {
+  KEY:'toesa_last_v2',
+  read(){ try{ const s=localStorage.getItem(this.KEY); return s?JSON.parse(s):null; }catch(e){ return null; } },
+  write(o){ try{ localStorage.setItem(this.KEY, JSON.stringify(o)); }catch(e){} },
+};
+
+/* ---------- 분석 실행 ---------- */
+const Analyze = {
+  async start(){
+    Nav.go('loading'); this.animate();
+    const local = computeLocal(state);
+    let result = local;
+
+    if(CONFIG.USE_BACKEND){
+      try{
+        const ctrl=new AbortController(); const to=setTimeout(()=>ctrl.abort(),4000);
+        const res=await fetch(CONFIG.API_URL,{method:'POST',headers:{'Content-Type':'application/json'},
+          body:JSON.stringify({...state, weights:CONFIG.weights}), signal:ctrl.signal});
+        clearTimeout(to);
+        if(res.ok){ const b=await res.json(); result={...local, ...b}; }
+      }catch(e){ /* 폴백: 로컬 결과 사용 */ }
+    }
+
+    await this._wait; // 로딩 연출 최소 시간 보장
+    state.result=result;
+    Result.render(result);
+    Nav.go('result');
+  },
+  animate(){
+    document.querySelectorAll('.ls').forEach(l=>l.classList.remove('on','done'));
+    const pctEl=$('#loadPct'); let pct=0;
+    const marks=[[35,1],[70,2],[100,3]];
+    const iv=setInterval(()=>{
+      pct=Math.min(100, pct+Math.random()*16+4);
+      pctEl.textContent=Math.round(pct);
+      const stage = pct<35?1 : pct<70?2 : 3;
+      for(let i=1;i<=3;i++){
+        const el=document.querySelector(`.ls[data-ls="${i}"]`);
+        el.classList.toggle('done', i<stage);
+        el.classList.toggle('on', i===stage);
+      }
+      if(pct>=100){ clearInterval(iv); document.querySelectorAll('.ls').forEach(l=>{l.classList.remove('on');l.classList.add('done');}); }
+    },160);
+    this._wait = new Promise(r=>setTimeout(r,1700));
+  },
+};
+
+/* ---------- 결과 렌더 ---------- */
+const Result = {
+  render(r){
+    const v=verdictOf(r.score);
+    const arch=archetypeOf(r);
+    r._verdict=v; r._arch=arch;            // 카드 공유에서 재사용
+    const prior=Store.read();              // 저장 전에 직전 값 확보
+
+    // 게이지
+    const LEN=346;
+    const arc=$('#resArc');
+    arc.style.stroke=v.color;
+    requestAnimationFrame(()=>{ setTimeout(()=>{ arc.style.strokeDashoffset=LEN*(1-r.score/100); },80); });
+    this.count($('#resScore'), r.score, 900);
+    // 판정 배지
+    const badge=$('#verdictBadge');
+    badge.textContent=v.line;
+    badge.style.background=v.color; badge.style.color='#fff';
+    // 유형
+    $('#archEmoji').textContent=arch.emoji;
+    $('#archName').textContent=arch.name;
+    $('#verdictDesc').textContent=arch.tag;
+
+    // 인사이트: 또래 백분위
+    const pct=peerPercentile(r.score);
+    $('#pctVal').textContent=pct;
+    $('#pctDesc').textContent=`${state.currentRole} · ${state.experience==='10+'?'10년+':state.experience+'년'} 조건 기준 (추정)`;
+
+    // 인사이트: 재진단 비교
+    const cmpV=$('#cmpVal'), cmpD=$('#cmpDesc');
+    cmpV.classList.remove('up','down');
+    if(prior && typeof prior.score==='number'){
+      const diff=r.score-prior.score;
+      if(diff>0){ cmpV.textContent=`▲ +${diff}점`; cmpV.classList.add('up'); cmpD.textContent='지난번보다 준비도가 올랐어요'; }
+      else if(diff<0){ cmpV.textContent=`▼ ${diff}점`; cmpV.classList.add('down'); cmpD.textContent='지난번보다 조금 내려갔어요'; }
+      else { cmpV.textContent='± 0점'; cmpD.textContent='지난번과 같아요'; }
+    }else{
+      cmpV.textContent='첫 진단'; cmpD.textContent='이번이 처음이에요';
+    }
+    Store.write({score:r.score, ts:Date.now()});
+
+    // 3축 분해
+    this.renderBreakdown(r);
+
+    // 퇴사 동기 진단 (복수 이유)
+    const ra=analyzeReasons(state.reason);
+    const rEye=$('#reasonEyebrow'), rCard=$('#reasonCard');
+    if(ra){
+      rEye.hidden=false; rCard.hidden=false;
+      rCard.innerHTML =
+        `<span class="reason-badge">${ra.badge}</span>`+
+        `<div class="reason-summary">${ra.summary}</div>`+
+        `<div class="reason-list">${ra.chips.map(c=>`<div class="reason-item"><b>${c.label}</b><span>${c.tag}</span></div>`).join('')}</div>`;
+    }else{ rEye.hidden=true; rCard.hidden=true; }
+
+    // 핵심 지표
+    $('#statSurvival').innerHTML = `${r.survivalMonths}<small>개월</small>`;
+    $('#statSurvivalD').textContent = r.debtMonthly>0 ? `월 지출+대출상환 ${fmt(r.burn)}만원 기준` : `비상금 ÷ 월 지출 ${fmt(r.burn)}만원`;
+    $('#statRehire').innerHTML = `${r.rehireMonths}<small>개월</small>`;
+    $('#statRehireD').textContent = `${state.currentRole} · ${state.experience==='10+'?'10년+':state.experience+'년'} 기준 추정`;
+
+    // 다음 단계까지
+    const gap=nextTierGap(r);
+    const nt=$('#nextTier');
+    if(gap){ nt.hidden=false; $('#ntTitle').textContent=gap.title; $('#ntDesc').textContent=gap.desc; }
+    else { nt.hidden=false; $('#ntTitle').textContent='이미 최고 등급이에요'; $('#ntDesc').textContent='준비도 최상위 구간입니다. 이제 타이밍과 실행만 남았어요.'; }
+
+    // 시뮬레이터
+    Simulator.init(r);
+    // 체크리스트 (밴드 기본 + 이유 맞춤 항목 병합)
+    this.renderChecklist(v.key, ra?ra.items:null);
+  },
+  renderBreakdown(r){
+    const rows=[
+      {name:'재무 안정성', sub:'런웨이', val:r.survivalScore, color:'#0051FF'},
+      {name:'커리어 경쟁력', sub:'재취업력', val:r.careerScore, color:'#0FB981'},
+      {name:'번아웃 압력', sub:'떠날 이유', val:r.stressScore, color:'#F59E0B'},
+    ];
+    $('#breakdown').innerHTML = rows.map(x=>`
+      <div class="bd-row">
+        <div class="bd-top">
+          <div class="bd-name">${x.name}<span class="sub">${x.sub}</span></div>
+          <div class="bd-val" style="color:${x.color}">${x.val}</div>
+        </div>
+        <div class="bd-track"><div class="bd-bar" style="background:${x.color}"></div></div>
+      </div>`).join('');
+    requestAnimationFrame(()=>setTimeout(()=>{
+      document.querySelectorAll('#breakdown .bd-bar').forEach((b,i)=>{ b.style.width=rows[i].val+'%'; });
+    },120));
+  },
+  renderChecklist(key, extra){
+    const lists={
+      go:['퇴사 통보 시점·인수인계 일정 계획','건강보험·국민연금 공백 대비 확인','다음 스텝(이직/휴식/창업) 최종 점검','퇴직금·연차 정산 내역 챙기기'],
+      ready:['생활비 1~2개월치 추가 확보','면접 2~3곳 실제 진행해 시장 확인','레퍼런스·추천인 미리 확보','연봉 협상 카드 정리'],
+      soon:['비상금 6개월치 목표로 저축 계획','이력서·포트폴리오 최신화','목표 직무 공고·연봉 시장 리서치','현 직장에서 더 뽑아낼 경험 정리'],
+      wait:['우선 3~6개월 생활비 안전망 확보','번아웃 원인 분리: 회사 vs 직무 vs 방향','소규모로 이직 시장 테스트(지원 몇 건)','섣부른 통보 전 재무 리스크 점검'],
+    };
+    const base=lists[key]||lists.soon;
+    // 이유 맞춤 항목을 앞에, 중복 제거 후 최대 7개
+    const items=[];
+    (extra||[]).forEach(t=>{ if(!items.includes(t)) items.push(t); });
+    base.forEach(t=>{ if(!items.includes(t)) items.push(t); });
+    const shown=items.slice(0,7);
+    const personalCount=(extra||[]).length;
+    $('#checklist').innerHTML=shown.map((t,i)=>`
+      <div class="check-item" onclick="this.classList.toggle('on')">
+        <div class="check-box">✓</div><div class="check-txt">${t}${i<personalCount?' <em class="ck-tag">이유 맞춤</em>':''}</div>
+      </div>`).join('');
+  },
+  count(el,to,dur){
+    const start=performance.now();
+    const ease=t=>1-Math.pow(1-t,3);
+    const tick=now=>{
+      const p=Math.min(1,(now-start)/dur);
+      el.textContent=Math.round(to*ease(p));
+      if(p<1) requestAnimationFrame(tick); else el.textContent=to;
+    };
+    requestAnimationFrame(tick);
+  },
+
+  /* ---------- PNG 결과 카드 (Canvas 직접 렌더 · 외부 라이브러리 없음) ---------- */
+  async shareCard(){
+    const r=state.result; if(!r) return;
+    toast('카드 생성 중…');
+    try{ await document.fonts.ready; }catch(e){}
+    const canvas=this.drawCard(r);
+    canvas.toBlob(async blob=>{
+      if(!blob){ toast('카드 생성에 실패했어요'); return; }
+      const file=new File([blob],'toesa-result.png',{type:'image/png'});
+      if(navigator.canShare && navigator.canShare({files:[file]})){
+        try{ await navigator.share({files:[file], title:'퇴사, 지금어때?', text:`나의 퇴사 준비도 ${r.score}점 · ${r._arch.emoji} ${r._arch.name}`}); return; }
+        catch(e){ if(e.name==='AbortError') return; }
+      }
+      const url=URL.createObjectURL(blob);
+      const a=document.createElement('a'); a.href=url; a.download='퇴사지금어때_결과카드.png';
+      document.body.appendChild(a); a.click(); a.remove();
+      setTimeout(()=>URL.revokeObjectURL(url),1500);
+      toast('결과 카드를 저장했어요');
+    },'image/png');
+  },
+  drawCard(r){
+    const W=1080,H=1350, cx=W/2;
+    const cv=document.createElement('canvas'); cv.width=W; cv.height=H;
+    const x=cv.getContext('2d');
+    const v=r._verdict, arch=r._arch;
+    const cssVar=n=>getComputedStyle(document.documentElement).getPropertyValue(n).trim();
+    const hex=c=>{ const m=/^var\((--[\w-]+)\)$/.exec(c); return m?cssVar(m[1]):c; };
+    const accent=hex(v.color);
+    const F=w=>`${w} -apple-system,'Pretendard',sans-serif`;
+    const rr=(a,b,w,h,rad)=>{ x.beginPath(); if(x.roundRect){x.roundRect(a,b,w,h,rad);} else {
+      x.moveTo(a+rad,b); x.arcTo(a+w,b,a+w,b+h,rad); x.arcTo(a+w,b+h,a,b+h,rad); x.arcTo(a,b+h,a,b,rad); x.arcTo(a,b,a+w,b,rad); x.closePath();} };
+
+    // 배경
+    const g=x.createRadialGradient(cx,120,60,cx,120,H); g.addColorStop(0,'#17233E'); g.addColorStop(.55,'#0B1220'); g.addColorStop(1,'#070C16');
+    x.fillStyle=g; x.fillRect(0,0,W,H);
+
+    // 상단 타이틀
+    x.fillStyle=accent; x.beginPath(); x.arc(cx-160,120,9,0,7); x.fill();
+    x.fillStyle='#DDE4F2'; x.font=F('700 40px'); x.textAlign='left'; x.textBaseline='middle';
+    x.fillText('퇴사, 지금어때?', cx-140,120);
+
+    // 유형 이모지 + 이름
+    x.textAlign='center';
+    x.font='150px "Apple Color Emoji","Segoe UI Emoji",sans-serif'; x.fillText(arch.emoji, cx, 320);
+    x.fillStyle='#FFFFFF'; x.font=F('800 76px'); x.fillText(arch.name, cx, 450);
+    x.fillStyle=accent; x.font=F('700 34px'); x.fillText(v.line, cx, 510);
+
+    // 게이지
+    const gcx=cx, gcy=780, R=210;
+    x.lineCap='round'; x.lineWidth=34;
+    x.strokeStyle='rgba(255,255,255,.12)'; x.beginPath(); x.arc(gcx,gcy,R,Math.PI,2*Math.PI); x.stroke();
+    x.strokeStyle=accent; x.beginPath(); x.arc(gcx,gcy,R,Math.PI,Math.PI+(r.score/100)*Math.PI); x.stroke();
+    x.fillStyle='#FFFFFF'; x.font=F('800 150px'); x.textBaseline='alphabetic'; x.fillText(String(r.score), gcx, gcy-55);
+    x.fillStyle='#8A94A8'; x.font=F('600 34px'); x.fillText('/ 100  READINESS', gcx, gcy+15);
+
+    // 지표 3열
+    const stats=[
+      ['생존 가능', `${r.survivalMonths}개월`],
+      ['재취업', `${r.rehireMonths}개월`],
+      ['또래 상위', `${peerPercentile(r.score)}%`],
+    ];
+    const cols=[cx-300, cx, cx+300], sy=1030;
+    x.strokeStyle='rgba(255,255,255,.08)'; x.lineWidth=1;
+    x.beginPath(); x.moveTo(120,sy-70); x.lineTo(W-120,sy-70); x.stroke();
+    stats.forEach((s,i)=>{
+      x.textBaseline='alphabetic';
+      x.fillStyle='#FFFFFF'; x.font=F('800 60px'); x.fillText(s[1], cols[i], sy);
+      x.fillStyle='#8A94A8'; x.font=F('600 30px'); x.fillText(s[0], cols[i], sy+48);
+    });
+
+    // 하단 태그라인 + 판정 desc
+    x.fillStyle='#AEB8CC'; x.font=F('500 32px');
+    const tag=arch.tag; const maxW=W-160;
+    // 간단 줄바꿈
+    let line='',lines=[]; for(const ch of tag){ if(x.measureText(line+ch).width>maxW){lines.push(line);line=ch;} else line+=ch; } lines.push(line);
+    lines.slice(0,2).forEach((ln,i)=>x.fillText(ln, cx, 1180+i*46));
+
+    x.fillStyle='#5A6678'; x.font=F('600 26px'); x.fillText('현실 기반 퇴사 준비도 진단', cx, 1300);
+    return cv;
+  },
+};
+
+/* ---------- 런웨이 시뮬레이터 ---------- */
+const Simulator = {
+  init(r){
+    const sav=$('#simSavings'), exp=$('#simExpense');
+    const debtMonthly = r.debtMonthly||0;
+    // 슬라이더 범위를 입력값 기준으로 조정
+    const savMax=Math.max(10000, Math.ceil((state.savings||0)*1.5/100)*100);
+    sav.max=savMax; sav.value=clamp(state.savings||0,0,savMax);
+    const expMin=50, expMax=Math.max(300, Math.ceil((state.monthlyExpense||150)*1.6/10)*10);
+    exp.min=expMin; exp.max=expMax; exp.value=clamp(state.monthlyExpense||150,expMin,expMax);
+    const update=()=>{
+      const s=+sav.value, e=+exp.value;
+      const months=Math.floor(s/(e+debtMonthly));
+      $('#simSavingsLab').textContent=fmt(s)+'만원';
+      $('#simExpenseLab').textContent=fmt(e)+'만원'+(debtMonthly>0?` (+대출 ${debtMonthly})`:'');
+      $('#simMonths').innerHTML=`${months}<small>개월</small>`;
+      $('#simFill').style.width=clamp(months/24*100,0,100)+'%';
+      const base=r.survivalMonths;
+      const hint = months>base?`처음보다 ${months-base}개월 늘었어요`
+                 : months<base?`처음보다 ${base-months}개월 줄었어요`
+                 : '현재 입력값 기준입니다';
+      $('#simHint').textContent=hint;
+    };
+    sav.oninput=update; exp.oninput=update; update();
+  },
+};
+</script>
+
+<!-- ===== 토스 배너 광고 SDK (앱인토스 런타임 전용) ===== -->
+<script src="https://cdn.appstoss.io/web-framework/toss-ads-sdk.js"></script>
+<script type="module">
+  import { TossAds } from '@apps-in-toss/web-framework';
+
+  const AD_GROUP_ID = 'ait.v2.live.1519086b386c4461';
+
+  function initializeTossAds(){
+    if(!TossAds) return;
+    if(!TossAds.initialize.isSupported || !TossAds.initialize.isSupported()) return;
+    TossAds.initialize({
+      callbacks:{
+        onInitialized: ()=>{ console.log('✅ Toss Ads 초기화 완료'); attachBannerAd(); },
+        onInitializationFailed: (error)=>{ console.error('❌ Toss Ads 초기화 실패:', error); },
+      }
+    });
+  }
+
+  function attachBannerAd(){
+    if(!TossAds) return null;
+    const adContainer = document.getElementById('toss-ad-container');
+    if(!adContainer) return null;
+    try{
+      return TossAds.attachBanner(AD_GROUP_ID, adContainer, {
+        theme:'auto',
+        tone:'blackAndWhite',
+        variant:'expanded',
+        callbacks:{
+          onAdRendered: ()=>{ console.log('👁️ 광고 렌더링 완료'); adContainer.classList.add('show'); },
+          onAdViewable: ()=>{ console.log('💰 광고 노출 기록 (수익 발생)'); },
+          onAdImpression: ()=>{ console.log('📢 광고 노출됨'); },
+          onAdClicked:   ()=>{ console.log('🖱️ 광고 클릭됨'); },
+          onNoFill:      ()=>{ console.warn('⚠️ 표시할 광고가 없습니다'); adContainer.classList.remove('show'); },
+          onAdFailedToRender: (p)=>{ console.error('❌ 광고 렌더링 실패:', p?.error?.message); adContainer.classList.remove('show'); },
         }
+      });
+    }catch(error){ console.error('광고 부착 중 오류:', error); return null; }
+  }
 
-        function goToForm() {
-            document.getElementById('stepIntro').classList.add('hidden');
-            document.getElementById('stepForm').classList.remove('hidden');
-            document.getElementById('stepLoading').classList.add('hidden');
-            document.getElementById('stepResult').classList.add('hidden');
-        }
-
-        function goToLoading() {
-            document.getElementById('stepIntro').classList.add('hidden');
-            document.getElementById('stepForm').classList.add('hidden');
-            document.getElementById('stepLoading').classList.remove('hidden');
-            document.getElementById('stepResult').classList.add('hidden');
-            animateLoading();
-        }
-
-        function goToResult() {
-            document.getElementById('stepIntro').classList.add('hidden');
-            document.getElementById('stepForm').classList.add('hidden');
-            document.getElementById('stepLoading').classList.add('hidden');
-            document.getElementById('stepResult').classList.remove('hidden');
-        }
-
-        function animateLoading() {
-            let percentage = 0;
-            const maxPercentage = 90;
-            const interval = setInterval(() => {
-                if (percentage < maxPercentage) {
-                    percentage += Math.random() * 15;
-                    if (percentage > maxPercentage) percentage = maxPercentage;
-                    document.getElementById('percentage').textContent = Math.round(percentage) + '%';
-
-                    if (percentage > 30) updateStep(1, 'done');
-                    if (percentage > 60) updateStep(2, 'active');
-                    if (percentage > 80) updateStep(2, 'done');
-                    if (percentage > 85) updateStep(3, 'active');
-                }
-            }, 300);
-
-            window.loadingInterval = interval;
-        }
-
-        function updateStep(stepNum, status) {
-            const step = document.getElementById('step' + stepNum);
-            if (step) {
-                step.classList.remove('pending', 'active', 'done');
-                step.classList.add(status);
-                
-                if (status === 'done') step.querySelector('.step-icon').textContent = '✓';
-                else if (status === 'active') step.querySelector('.step-icon').textContent = stepNum;
-            }
-        }
-
-        async function loadConfigFromFirebase() {
-            try {
-                const docRef = window.firebaseDoc(window.firebaseDb, 'toesalens_config', 'main');
-                const docSnap = await window.firebaseGetDoc(docRef);
-                
-                if (docSnap.exists()) {
-                    return docSnap.data();
-                }
-                return null;
-            } catch (error) {
-                console.error('Firebase 로드 오류:', error);
-                return null;
-            }
-        }
-
-        async function submitForm(event) {
-            event.preventDefault();
-
-            const formData = {
-                salary: parseInt(document.getElementById('salary').value),
-                monthlyIncome: parseInt(document.getElementById('monthlyIncome').value),
-                savings: parseInt(document.getElementById('savings').value),
-                monthlyExpense: parseInt(document.getElementById('monthlyExpense').value),
-                debt: parseInt(document.getElementById('debt').value),
-                experience: document.getElementById('experience').value,
-                currentRole: document.getElementById('currentRole').value,
-                companySize: document.getElementById('companySize').value,
-                stressLevel: document.getElementById('stressLevel').value,
-            };
-
-            goToLoading();
-            await new Promise(r => setTimeout(r, 2000));
-            await analyzeWithAI(formData);
-        }
-
-        async function analyzeWithAI(formData) {
-            try {
-                const firebaseConfig = await loadConfigFromFirebase();
-                
-                const requestBody = {
-                    ...formData,
-                    promptVersion: firebaseConfig?.promptVersion || 'v1',
-                    temperature: firebaseConfig?.temperature || 0.3,
-                    weights: firebaseConfig?.weights || { survival: 40, career: 40, stress: 20 }
-                };
-
-                const response = await fetch('https://toesalens.vercel.app/api/analyze', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(requestBody)
-                });
-
-                if (!response.ok) throw new Error('API Error');
-                
-                const result = await response.json();
-                
-                clearInterval(window.loadingInterval);
-                document.getElementById('percentage').textContent = '100%';
-                updateStep(3, 'done');
-                
-                await new Promise(r => setTimeout(r, 800));
-                displayResult(result);
-                goToResult();
-            } catch (error) {
-                console.error('분석 오류:', error);
-                clearInterval(window.loadingInterval);
-                alert('분석 중 오류가 발생했습니다.');
-                goToForm();
-            }
-        }
-
-        function displayResult(result) {
-            const score = result.score || 0;
-            document.getElementById('scoreValue').textContent = score;
-            document.getElementById('scoreBar').style.width = score + '%';
-            document.getElementById('scoreDescription').textContent = result.scoreDescription || '분석 완료';
-
-            const survival = result.survivalMonths || 0;
-            document.getElementById('survivalValue').textContent = survival + '개월';
-            document.getElementById('survivalDescription').textContent = result.survivalDescription || '재무 상황 확인';
-
-            const rehire = result.rehireMonths || 0;
-            document.getElementById('rehireValue').textContent = rehire + '개월';
-            document.getElementById('rehireDescription').textContent = result.rehireDescription || '업계 평균';
-
-            generateAdvice(score, survival, rehire);
-
-            window.lastResult = result;
-        }
-
-        function generateAdvice(score, survival, rehire) {
-            let advice = '';
-            
-            if (score >= 75) {
-                advice = '✅ 재무 상태가 안정적입니다. 충분한 시간을 가지고 신중히 결정하세요.';
-            } else if (score >= 50) {
-                advice = '🤔 중간 수준의 안정성입니다. 몇 달간의 생활비 확보 후 진행을 고려하세요.';
-            } else {
-                advice = '⚠️ 현재는 조금 더 준비가 필요합니다. 비상금을 늘리거나 재취업 계획을 세우세요.';
-            }
-
-            document.getElementById('adviceText').textContent = advice;
-        }
-
-        function shareResult() {
-            if (!window.lastResult) return;
-            
-            const result = window.lastResult;
-            const text = `퇴사, 지금어때? 분석 결과\n점수: ${result.score}점\n생존기간: ${result.survivalMonths}개월\n재취업기간: ${result.rehireMonths}개월\n${result.scoreDescription}`;
-            
-            if (navigator.share) {
-                navigator.share({
-                    title: '퇴사, 지금어때?',
-                    text: text
-                });
-            } else {
-                alert(text);
-            }
-        }
-    </script>
+  window.addEventListener('load', ()=>{ initializeTossAds(); });
+</script>
 </body>
 </html>
